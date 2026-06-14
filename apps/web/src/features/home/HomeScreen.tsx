@@ -156,7 +156,7 @@ export function HomeScreen(_: { onPerson: (id: string) => void }) {
               Add someone to see your shared months.
             </p>
             <p className="mt-2 font-sans text-[13px] text-ink-3">
-              Tap the + on the People tab.
+              Tap <span className="font-semibold text-ink-2">+</span> below to begin.
             </p>
           </div>
         ) : shown.length === 0 ? (

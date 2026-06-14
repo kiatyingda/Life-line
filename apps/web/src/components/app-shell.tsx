@@ -11,6 +11,7 @@ import { TimelineScreen } from "@/features/timeline/TimelineScreen";
 import { JournalScreen } from "@/features/journal/JournalScreen";
 import { MemorySheet } from "@/features/journal/MemorySheet";
 import { PersonSheet } from "@/features/people/PersonSheet";
+import { OnboardingScreen } from "@/features/onboarding/OnboardingScreen";
 
 function Splash() {
   return (
@@ -38,16 +39,27 @@ export function AppShell() {
   });
 
   const selected = selectedId ? (people.find((p) => p.id === selectedId) ?? null) : null;
-  const onAdd = () =>
-    tab === "people" ? setPersonSheet({ open: true, editing: null }) : setMemOpen(true);
+  // What `+` adds depends on context: on People, always a person; on Home
+  // with no one else added yet, a person (otherwise no moments to make);
+  // everywhere else, a moment.
+  const hasOthers = people.some((p) => p.relationship !== "self");
+  const onAdd = () => {
+    if (tab === "people" || (tab === "home" && !hasOthers)) {
+      setPersonSheet({ open: true, editing: null });
+    } else {
+      setMemOpen(true);
+    }
+  };
 
   const needsOnboarding = hydrated && !people.some((p) => p.relationship === "self");
 
   return (
     <div className="flex min-h-dvh w-full items-center justify-center bg-canvas-deep">
       <div className="relative flex h-dvh w-full flex-col overflow-hidden bg-canvas sm:h-[860px] sm:max-h-[92vh] sm:w-[420px] sm:rounded-[32px] sm:shadow-[0_30px_90px_rgba(42,38,32,0.22)]">
-        {!hydrated || needsOnboarding ? (
+        {!hydrated ? (
           <Splash />
+        ) : needsOnboarding ? (
+          <OnboardingScreen onSave={addPerson} />
         ) : (
           <>
             <div className="no-scrollbar flex-1 overflow-y-auto overscroll-contain pt-[14px]">
@@ -85,16 +97,6 @@ export function AppShell() {
             />
           </>
         )}
-
-        {/* First-run self setup. Driven entirely by store state: closes itself
-            the moment the user submits and a "self" person lands in the store. */}
-        <PersonSheet
-          open={needsOnboarding}
-          onOpenChange={() => {}}
-          editing={null}
-          onSave={addPerson}
-          firstRun
-        />
       </div>
     </div>
   );

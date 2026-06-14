@@ -36,35 +36,23 @@ const blank: FormValues = {
   emoji: "👵🏻",
 };
 
-const selfBlank: FormValues = {
-  name: "Me",
-  relationship: "self",
-  birthDate: "",
-  lifeExpectancy: 85,
-  emoji: "🧑🏻",
-};
-
 export function PersonSheet({
   open,
   onOpenChange,
   editing,
   onSave,
-  firstRun = false,
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
   editing: Person | null;
   onSave: (p: Person | Omit<Person, "id">) => void;
-  /** First-launch self setup: locks relationship to "self", blocks dismissal. */
-  firstRun?: boolean;
 }) {
   const { register, handleSubmit, reset, watch, setValue, formState } =
-    useForm<FormValues>({
-      resolver: zodResolver(schema),
-      defaultValues: firstRun ? selfBlank : blank,
-    });
+    useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: blank });
 
-  const lockedSelf = firstRun || editing?.relationship === "self";
+  // Editing the existing self person: lock relationship so they can't
+  // accidentally morph themselves into a parent.
+  const lockedSelf = editing?.relationship === "self";
 
   useEffect(() => {
     if (!open) return;
@@ -77,9 +65,9 @@ export function PersonSheet({
         emoji: editing.emoji,
       });
     } else {
-      reset(firstRun ? selfBlank : blank);
+      reset(blank);
     }
-  }, [open, editing, reset, firstRun]);
+  }, [open, editing, reset]);
 
   const rel = watch("relationship");
   const le = watch("lifeExpectancy");
@@ -92,30 +80,17 @@ export function PersonSheet({
     onOpenChange(false);
   });
 
-  const title = firstRun
-    ? "Hi — start with you"
-    : editing
-      ? "Edit person"
-      : "Someone who matters";
+  const title = editing ? "Edit person" : "Someone who matters";
+  const buttonLabel = editing ? "Save changes" : "Add to my people";
 
-  const buttonLabel = firstRun
-    ? "Save my profile"
-    : editing
-      ? "Save changes"
-      : "Add to my people";
-
-  // "self" is hidden from the picker outside firstRun — there can only be one.
+  // "self" is hidden from the picker — there can only be one. Onboarding lives
+  // in OnboardingScreen, not here.
   const pickable = lockedSelf ? [] : REL.filter((r) => r.k !== "self");
 
   return (
-    <Sheet
-      open={open}
-      onOpenChange={onOpenChange}
-      title={title}
-      dismissible={!firstRun}
-    >
+    <Sheet open={open} onOpenChange={onOpenChange} title={title}>
       <Field label="Name" error={formState.errors.name?.message}>
-        <TextInput placeholder={firstRun ? "Your name" : "Dad"} {...register("name")} />
+        <TextInput placeholder="Dad" {...register("name")} />
       </Field>
 
       {lockedSelf ? null : (
