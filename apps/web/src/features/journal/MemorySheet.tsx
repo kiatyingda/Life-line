@@ -10,6 +10,8 @@ import { Field } from "@/components/ui/field";
 import { TextInput } from "@/components/ui/text-input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Avatar } from "@/components/ui/avatar";
+import { DateField } from "@/components/ui/date-field";
 
 const schema = z.object({
   title: z.string().trim().min(1, "Give it a name"),
@@ -63,7 +65,10 @@ export function MemorySheet({
         <TextInput placeholder="He ordered too much. Again." {...register("note")} />
       </Field>
       <Field label="When">
-        <TextInput type="date" {...register("date")} />
+        <DateField
+          value={watch("date")}
+          onChange={(iso) => setValue("date", iso, { shouldValidate: !!iso })}
+        />
       </Field>
       <Field label="Who was there">
         <div className="flex flex-wrap gap-2">
@@ -78,9 +83,9 @@ export function MemorySheet({
                   background: on ? `${p.color}20` : "var(--card)",
                   boxShadow: `inset 0 0 0 1.5px ${on ? `${p.color}70` : "var(--line-2)"}`,
                 }}
-                className="flex items-center gap-[7px] rounded-pill py-[7px] pl-2 pr-3"
+                className="flex items-center gap-2 rounded-pill py-1 pl-1 pr-3"
               >
-                <span className="text-[15px] leading-none">{p.emoji}</span>
+                <Avatar p={p} size={24} />
                 <span
                   className={`font-sans text-[13px] font-semibold ${on ? "text-ink" : "text-ink-2"}`}
                 >
@@ -92,7 +97,7 @@ export function MemorySheet({
         </div>
       </Field>
       <div className="mt-2">
-        <Button type="submit" onClick={submit}>
+        <Button type="submit" onClick={submit} className="press">
           Keep this moment
         </Button>
       </div>

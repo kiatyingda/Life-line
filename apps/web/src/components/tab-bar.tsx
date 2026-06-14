@@ -59,7 +59,7 @@ export function TabBar({
       <button
         onClick={onAdd}
         aria-label="Add"
-        className="-mt-[14px] grid h-[52px] w-[52px] place-items-center rounded-pill bg-brand shadow-[0_8px_20px_rgba(188,106,69,0.4)]"
+        className="press -mt-[14px] grid h-[52px] w-[52px] place-items-center rounded-pill bg-brand shadow-[0_8px_20px_rgba(188,106,69,0.4)]"
       >
         <Plus size={24} className="text-[#FFF7F2]" />
       </button>

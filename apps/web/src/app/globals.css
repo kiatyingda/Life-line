@@ -65,9 +65,46 @@ body {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+@keyframes rise-in {
+  from { transform: translateY(8px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes dot-in {
+  from { transform: scale(0.4); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
 .sheet-content[data-state="open"] {
   animation: sheet-in 0.26s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .sheet-overlay[data-state="open"] {
   animation: fade-in 0.2s ease;
+}
+
+/* press micro-bounce on interactive surfaces */
+.press {
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+              filter 0.18s ease;
+}
+.press:active {
+  transform: scale(0.97);
+  filter: brightness(0.95);
+}
+
+/* gentle rise-in for hero content; reduce-motion friendly */
+.rise-in {
+  animation: rise-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.dot-in {
+  animation: dot-in 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rise-in,
+  .dot-in,
+  .sheet-content[data-state="open"],
+  .sheet-overlay[data-state="open"] {
+    animation: none !important;
+  }
+  .press {
+    transition: none;
+  }
 }

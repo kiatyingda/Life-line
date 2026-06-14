@@ -9,14 +9,15 @@ import { Sheet } from "@/components/ui/sheet";
 import { Field } from "@/components/ui/field";
 import { TextInput } from "@/components/ui/text-input";
 import { Button } from "@/components/ui/button";
+import { DateField } from "@/components/ui/date-field";
 
-const REL: ReadonlyArray<{ k: Relationship; emoji: string; color: string }> = [
-  { k: "self", emoji: "🧑🏻", color: PERSON_COLORS.self },
-  { k: "partner", emoji: "🧑🏻‍🤝‍🧑🏻", color: PERSON_COLORS.partner },
-  { k: "parent", emoji: "👵🏻", color: PERSON_COLORS.parent },
-  { k: "child", emoji: "🧒🏻", color: PERSON_COLORS.child },
-  { k: "sibling", emoji: "🧑🏻", color: PERSON_COLORS.sibling },
-  { k: "friend", emoji: "🙂", color: PERSON_COLORS.friend },
+const REL: ReadonlyArray<{ k: Relationship; color: string }> = [
+  { k: "self", color: PERSON_COLORS.self },
+  { k: "partner", color: PERSON_COLORS.partner },
+  { k: "parent", color: PERSON_COLORS.parent },
+  { k: "child", color: PERSON_COLORS.child },
+  { k: "sibling", color: PERSON_COLORS.sibling },
+  { k: "friend", color: PERSON_COLORS.friend },
 ];
 
 const schema = z.object({
@@ -24,16 +25,14 @@ const schema = z.object({
   relationship: z.enum(["self", "partner", "parent", "child", "sibling", "friend"]),
   birthDate: z.string().min(1, "Add a date"),
   lifeExpectancy: z.number().min(40).max(110),
-  emoji: z.string().trim().min(1),
 });
 type FormValues = z.infer<typeof schema>;
 
 const blank: FormValues = {
   name: "",
   relationship: "parent",
-  birthDate: "1960-01-01",
+  birthDate: "",
   lifeExpectancy: 85,
-  emoji: "👵🏻",
 };
 
 export function PersonSheet({
@@ -62,7 +61,6 @@ export function PersonSheet({
         relationship: editing.relationship,
         birthDate: editing.birthDate,
         lifeExpectancy: editing.lifeExpectancy,
-        emoji: editing.emoji,
       });
     } else {
       reset(blank);
@@ -71,11 +69,11 @@ export function PersonSheet({
 
   const rel = watch("relationship");
   const le = watch("lifeExpectancy");
-  const emoji = watch("emoji");
+  const birthDate = watch("birthDate");
 
   const submit = handleSubmit((v) => {
     const color = REL.find((r) => r.k === v.relationship)?.color ?? PERSON_COLORS.parent;
-    const base = { ...v, color };
+    const base = { ...v, emoji: editing?.emoji ?? "", color };
     onSave(editing ? { ...editing, ...base } : base);
     onOpenChange(false);
   });
@@ -102,10 +100,7 @@ export function PersonSheet({
                 <button
                   key={r.k}
                   type="button"
-                  onClick={() => {
-                    setValue("relationship", r.k);
-                    if (!editing) setValue("emoji", r.emoji);
-                  }}
+                  onClick={() => setValue("relationship", r.k)}
                   style={{
                     background: on ? `${r.color}20` : "var(--card)",
                     boxShadow: `inset 0 0 0 1.5px ${on ? `${r.color}70` : "var(--line-2)"}`,
@@ -120,22 +115,12 @@ export function PersonSheet({
         </Field>
       )}
 
-      <div className="flex gap-3">
-        <div className="flex-1">
-          <Field label="Born" error={formState.errors.birthDate?.message}>
-            <TextInput type="date" {...register("birthDate")} />
-          </Field>
-        </div>
-        <div className="w-[92px]">
-          <Field label="Emoji">
-            <TextInput
-              className="text-center text-xl"
-              value={emoji}
-              onChange={(e) => setValue("emoji", e.target.value)}
-            />
-          </Field>
-        </div>
-      </div>
+      <Field label="Born" error={formState.errors.birthDate?.message}>
+        <DateField
+          value={birthDate}
+          onChange={(iso) => setValue("birthDate", iso, { shouldValidate: !!iso })}
+        />
+      </Field>
 
       {rel !== "child" ? (
         <Field label={`Life expectancy estimate · ${le}`}>
@@ -154,7 +139,7 @@ export function PersonSheet({
       ) : null}
 
       <div className="mt-2">
-        <Button type="submit" onClick={submit}>
+        <Button type="submit" onClick={submit} className="press">
           {buttonLabel}
         </Button>
       </div>

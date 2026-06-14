@@ -13,6 +13,7 @@ import { Chip } from "@/components/ui/chip";
 import { Label } from "@/components/ui/label";
 import { Numeral } from "@/components/ui/numeral";
 import { Segmented } from "@/components/ui/segmented";
+import { Sunrise } from "@/components/ui/sunrise";
 import { MomentsGrid, type GridUnit } from "./MomentsGrid";
 
 function Greeting() {
@@ -126,7 +127,7 @@ export function HomeScreen(_: { onPerson: (id: string) => void }) {
                   color={p.color}
                   onClick={() => toggle(p.id)}
                 >
-                  <span className="text-[14px] leading-none">{p.emoji}</span>
+                  <Avatar p={p} size={22} />
                   <span>{p.name}</span>
                 </Chip>
               ))}
@@ -151,7 +152,9 @@ export function HomeScreen(_: { onPerson: (id: string) => void }) {
       <div className="px-5 pt-5">
         {others.length === 0 ? (
           <div className="rounded-card bg-card p-6 text-center shadow-card">
-            <div className="mb-2 text-[44px] leading-none">🌅</div>
+            <div className="mb-3 flex justify-center">
+              <Sunrise size={80} tone="soft" />
+            </div>
             <p className="font-serif text-[19px] font-medium leading-snug text-ink">
               Add someone to see your shared months.
             </p>

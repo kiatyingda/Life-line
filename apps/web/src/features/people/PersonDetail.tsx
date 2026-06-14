@@ -6,7 +6,7 @@ import { useAppStore, selectSelf } from "@/store/useAppStore";
 import { Label } from "@/components/ui/label";
 import { Numeral } from "@/components/ui/numeral";
 import { Avatar } from "@/components/ui/avatar";
-import { momentIcon } from "@/lib/icons";
+import { momentIcon, milestoneIconFor } from "@/lib/icons";
 import { Sun } from "lucide-react";
 
 export function PersonDetail({
@@ -87,18 +87,26 @@ export function PersonDetail({
           <>
             <Label className="mb-3">Milestones ahead</Label>
             <div className="mb-[26px] flex flex-col gap-2">
-              {stones.map((m) => (
-                <div
-                  key={m.id}
-                  className="flex items-center gap-3 rounded-[14px] bg-card-soft px-[14px] py-3 shadow-[inset_0_0_0_1px_var(--line)]"
-                >
-                  <span className="text-xl leading-none">{m.emoji}</span>
-                  <span className="flex-1 font-sans text-sm text-ink">{m.title}</span>
-                  <span className="font-sans text-[12.5px] text-ink-3">
-                    {parseISO(m.date).getFullYear()}
-                  </span>
-                </div>
-              ))}
+              {stones.map((m) => {
+                const Icon = milestoneIconFor(m.category);
+                return (
+                  <div
+                    key={m.id}
+                    className="flex items-center gap-3 rounded-[14px] bg-card-soft px-[14px] py-3 shadow-[inset_0_0_0_1px_var(--line)]"
+                  >
+                    <span
+                      className="grid h-7 w-7 place-items-center rounded-pill"
+                      style={{ background: `${person.color}1A` }}
+                    >
+                      <Icon size={14} style={{ color: person.color }} />
+                    </span>
+                    <span className="flex-1 font-sans text-sm text-ink">{m.title}</span>
+                    <span className="font-sans text-[12.5px] text-ink-3">
+                      {parseISO(m.date).getFullYear()}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </>
         ) : null}

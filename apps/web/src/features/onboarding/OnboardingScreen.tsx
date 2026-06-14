@@ -7,12 +7,13 @@ import { PERSON_COLORS, type Person } from "@lifelines/core";
 import { Field } from "@/components/ui/field";
 import { TextInput } from "@/components/ui/text-input";
 import { Button } from "@/components/ui/button";
+import { Sunrise } from "@/components/ui/sunrise";
+import { DateField } from "@/components/ui/date-field";
 
 const schema = z.object({
   name: z.string().trim().min(1, "Tell us your name"),
   birthDate: z.string().min(1, "Add your birth date"),
   lifeExpectancy: z.number().min(40).max(110),
-  emoji: z.string().trim().min(1),
 });
 type FormValues = z.infer<typeof schema>;
 
@@ -20,13 +21,12 @@ const defaults: FormValues = {
   name: "Me",
   birthDate: "",
   lifeExpectancy: 85,
-  emoji: "🧑🏻",
 };
 
 /**
  * First-launch welcome. Full-screen — not a sheet — because this is the
  * front door, not an interruption. Sunset gradient sets the tone the rest
- * of the app inherits.
+ * of the app inherits. Illustration over emoji.
  */
 export function OnboardingScreen({
   onSave,
@@ -39,7 +39,7 @@ export function OnboardingScreen({
   });
 
   const le = watch("lifeExpectancy");
-  const emoji = watch("emoji");
+  const birthDate = watch("birthDate");
 
   const submit = handleSubmit((v) => {
     onSave({
@@ -47,7 +47,7 @@ export function OnboardingScreen({
       relationship: "self",
       birthDate: v.birthDate,
       lifeExpectancy: v.lifeExpectancy,
-      emoji: v.emoji,
+      emoji: "",
       color: PERSON_COLORS.self,
     });
   });
@@ -58,11 +58,9 @@ export function OnboardingScreen({
       className="bg-sunset no-scrollbar flex flex-1 flex-col overflow-y-auto px-5 pb-7 pt-10"
     >
       {/* hero */}
-      <div className="mb-7 text-center">
-        <div className="mb-3 text-[52px] leading-none" aria-hidden>
-          🌅
-        </div>
-        <h1 className="font-serif text-[34px] font-medium leading-[1.05] text-ink">
+      <div className="rise-in mb-7 flex flex-col items-center text-center">
+        <Sunrise size={108} />
+        <h1 className="mt-5 font-serif text-[34px] font-medium leading-[1.05] text-ink">
           Welcome.
         </h1>
         <p className="mx-auto mt-2 max-w-[280px] font-sans text-[14px] leading-snug text-ink-2">
@@ -72,27 +70,19 @@ export function OnboardingScreen({
       </div>
 
       {/* form */}
-      <div className="rounded-card bg-card-soft/95 p-4 shadow-card backdrop-blur-sm">
+      <div className="rounded-card bg-card/95 p-4 shadow-card backdrop-blur-sm">
         <Field label="Your name" error={formState.errors.name?.message}>
           <TextInput placeholder="Your name" {...register("name")} autoFocus />
         </Field>
 
-        <div className="flex gap-3">
-          <div className="flex-1">
-            <Field label="Born" error={formState.errors.birthDate?.message}>
-              <TextInput type="date" {...register("birthDate")} />
-            </Field>
-          </div>
-          <div className="w-[78px]">
-            <Field label="You">
-              <TextInput
-                className="text-center text-xl"
-                value={emoji}
-                onChange={(e) => setValue("emoji", e.target.value)}
-              />
-            </Field>
-          </div>
-        </div>
+        <Field label="Born" error={formState.errors.birthDate?.message}>
+          <DateField
+            value={birthDate}
+            onChange={(iso) =>
+              setValue("birthDate", iso, { shouldValidate: !!iso })
+            }
+          />
+        </Field>
 
         <Field label={`Life expectancy estimate · ${le}`}>
           <input
@@ -109,9 +99,10 @@ export function OnboardingScreen({
         </Field>
       </div>
 
-      {/* CTA pinned bottom */}
       <div className="mt-auto pt-6">
-        <Button type="submit">Begin</Button>
+        <Button type="submit" className="press">
+          Begin
+        </Button>
       </div>
     </form>
   );

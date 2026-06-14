@@ -49,6 +49,10 @@ export function MomentsGrid({
     );
   }
 
+  // Cap stagger so it never feels like a load delay; later dots all enter
+  // together once the cap is hit.
+  const staggerMs = (i: number) => Math.min(i * 6, 220);
+
   return (
     <div
       role="img"
@@ -64,6 +68,7 @@ export function MomentsGrid({
         <span
           key={i}
           aria-hidden
+          className="dot-in"
           style={{
             width: dot,
             height: dot,
@@ -71,6 +76,7 @@ export function MomentsGrid({
             background: person.color,
             // gentle fade into the future — the far edge sits quieter
             opacity: 0.92 - (i / Math.max(count, 1)) * 0.34,
+            animationDelay: `${staggerMs(i)}ms`,
           }}
         />
       ))}

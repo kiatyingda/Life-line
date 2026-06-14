@@ -4,9 +4,9 @@ import { Cake, Heart, ArrowRight, type LucideIcon } from "lucide-react";
 import { momentsFor, ageOn, nextBirthday, daysBetween } from "@lifelines/core";
 import { useAppStore, selectSelf } from "@/store/useAppStore";
 import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { Numeral } from "@/components/ui/numeral";
 import { Avatar } from "@/components/ui/avatar";
+import { SunsetHeader } from "@/components/ui/sunset-header";
 
 function Meta({ icon: Icon, text }: { icon: LucideIcon; text: string }) {
   return (
@@ -25,11 +25,13 @@ export function PeopleScreen({ onPerson }: { onPerson: (id: string) => void }) {
     memories.filter((m) => m.personIds.includes(id)).length;
 
   return (
-    <div className="px-5 pb-4 pt-2">
-      <div className="mb-1 font-serif text-[30px] font-medium text-ink">Your people</div>
-      <Label className="mb-5">The ones who matter most</Label>
-
-      <div className="flex flex-col gap-3">
+    <div>
+      <SunsetHeader
+        overline="People"
+        title="Your people"
+        subtitle="The ones who matter most"
+      />
+      <div className="flex flex-col gap-3 px-5 pt-5">
         {people.map((p) => {
           const m = momentsFor(p, self)[0]!;
           const age = ageOn(p.birthDate);

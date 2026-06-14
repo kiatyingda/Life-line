@@ -1,4 +1,17 @@
-import { Sun, Plane, Gift, Cake, Clock, GraduationCap, type LucideIcon } from "lucide-react";
+import {
+  Sun,
+  Plane,
+  Gift,
+  Cake,
+  Clock,
+  GraduationCap,
+  Home,
+  Heart,
+  Award,
+  Sparkles,
+  Star,
+  type LucideIcon,
+} from "lucide-react";
 import type { InsightKind } from "@lifelines/core";
 
 /** Maps domain keys to icons — keeps @lifelines/core icon-free and portable. */
@@ -18,3 +31,17 @@ export const insightIcon: Record<InsightKind, LucideIcon> = {
   trip: Plane,
   birthday: Cake,
 };
+
+/** Milestone category → lucide icon. Lowercased, falls back to Star. */
+export const milestoneIcon: Record<string, LucideIcon> = {
+  school: GraduationCap,
+  "coming of age": Award,
+  birthday: Cake,
+  home: Home,
+  life: Sparkles,
+  trip: Plane,
+  love: Heart,
+};
+
+export const milestoneIconFor = (category: string): LucideIcon =>
+  milestoneIcon[category.toLowerCase().trim()] ?? Star;

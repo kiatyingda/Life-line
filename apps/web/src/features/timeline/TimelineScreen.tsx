@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { Home as HomeIcon } from "lucide-react";
 import { yearOf, ADULT_AGE, type Milestone } from "@lifelines/core";
 import { useAppStore } from "@/store/useAppStore";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Avatar } from "@/components/ui/avatar";
 import { Segmented } from "@/components/ui/segmented";
+import { SunsetHeader } from "@/components/ui/sunset-header";
 
 type Zoom = "life" | "mid" | "near";
 
@@ -39,19 +41,18 @@ function Track({
   );
 }
 
-function Dot({ x, emoji, color }: { x: number; emoji: string; color: string }) {
+function Dot({ x, color }: { x: number; color: string }) {
   return (
     <div
-      className="absolute z-[2] grid h-[18px] w-[18px] place-items-center rounded-pill bg-card text-[10px]"
+      className="absolute z-[2] h-[12px] w-[12px] rounded-pill"
       style={{
         top: "50%",
         left: `${x}%`,
         transform: "translate(-50%,-50%)",
-        boxShadow: `0 0 0 1.5px ${color}55, 0 2px 5px rgba(42,38,32,0.12)`,
+        background: color,
+        boxShadow: `0 0 0 2.5px var(--card), 0 2px 5px rgba(42,38,32,0.14)`,
       }}
-    >
-      {emoji}
-    </div>
+    />
   );
 }
 
@@ -100,109 +101,119 @@ export function TimelineScreen() {
   const shared: Milestone[] = milestones.filter((m) => !m.personId);
 
   return (
-    <div className="px-5 pb-4 pt-2">
-      <div className="mb-1 font-serif text-[30px] font-medium text-ink">Lives, overlapping</div>
-      <Label className="mb-4">
-        Every band fades toward its horizon — no endings, just distance
-      </Label>
+    <div>
+      <SunsetHeader
+        overline="Timeline"
+        title="Lives, overlapping"
+        subtitle="Every band fades toward its horizon — no endings, just distance"
+      />
 
-      <div className="mb-5">
-        <Segmented<Zoom>
-          value={zoom}
-          onChange={setZoom}
-          options={[
-            ["life", "Lifetime"],
-            ["mid", "30 yrs"],
-            ["near", "10 yrs"],
-          ]}
-        />
-      </div>
+      <div className="px-5 pb-4 pt-5">
+        <div className="mb-5">
+          <Segmented<Zoom>
+            value={zoom}
+            onChange={setZoom}
+            options={[
+              ["life", "Lifetime"],
+              ["mid", "30 yrs"],
+              ["near", "10 yrs"],
+            ]}
+          />
+        </div>
 
-      <Card className="relative overflow-hidden px-[14px] pb-2 pt-4">
-        {shared.length > 0 ? (
-          <Row
-            avatar={<span className="text-base leading-none">🏡</span>}
-            label={<Label className="text-[9.5px]">Family</Label>}
-          >
-            <Track decades={decades} pct={pct} nowX={pct(nowY)}>
-              {shared.map((m) => (
-                <Dot key={m.id} x={pct(yearOf(m.date))} emoji={m.emoji} color="var(--ink-3)" />
-              ))}
-            </Track>
-          </Row>
-        ) : null}
-
-        {people.map((p) => {
-          const bY = yearOf(p.birthDate);
-          const hY = bY + p.lifeExpectancy;
-          const adultX = p.relationship === "child" ? pct(bY + ADULT_AGE) : null;
-          const mils = milestones.filter((m) => m.personId === p.id);
-          return (
+        <Card className="relative overflow-hidden px-[14px] pb-2 pt-4">
+          {shared.length > 0 ? (
             <Row
-              key={p.id}
-              avatar={<Avatar p={p} size={26} />}
-              label={
-                <span className="font-sans text-[12.5px] font-semibold text-ink-2">{p.name}</span>
+              avatar={
+                <span
+                  className="grid h-[26px] w-[26px] place-items-center rounded-pill bg-ink-4/30"
+                  aria-hidden
+                >
+                  <HomeIcon size={14} className="text-ink-2" />
+                </span>
               }
+              label={<Label className="text-[9.5px]">Family</Label>}
             >
               <Track decades={decades} pct={pct} nowX={pct(nowY)}>
-                {/* life band, fading to horizon */}
-                <div
-                  className="absolute h-[9px] rounded-pill"
-                  style={{
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    left: `${pct(bY)}%`,
-                    width: `${Math.max(0, pct(hY) - pct(bY))}%`,
-                    background: `linear-gradient(90deg, ${p.color}D9 0%, ${p.color}B0 55%, ${p.color}00 100%)`,
-                  }}
-                />
-                {adultX != null ? (
-                  <div
-                    className="absolute bottom-1 top-1 w-0"
-                    style={{ left: `${adultX}%`, borderLeft: `1.5px dashed ${p.color}` }}
-                  >
-                    <span
-                      className="absolute -top-[2px] left-[3px] font-sans text-[9px] font-bold"
-                      style={{ color: p.color }}
-                    >
-                      18
-                    </span>
-                  </div>
-                ) : null}
-                {mils.map((m) => (
-                  <Dot key={m.id} x={pct(yearOf(m.date))} emoji={m.emoji} color={p.color} />
+                {shared.map((m) => (
+                  <Dot key={m.id} x={pct(yearOf(m.date))} color="var(--ink-3)" />
                 ))}
               </Track>
             </Row>
-          );
-        })}
+          ) : null}
 
-        {/* decade axis */}
-        <div className="relative ml-[94px] mt-[2px] h-4">
-          {decades.map((y) => (
-            <span
-              key={y}
-              className="absolute font-sans text-[10px] text-ink-4"
-              style={{ left: `${pct(y)}%`, transform: "translateX(-50%)" }}
-            >
-              {y}
-            </span>
-          ))}
-        </div>
-      </Card>
+          {people.map((p) => {
+            const bY = yearOf(p.birthDate);
+            const hY = bY + p.lifeExpectancy;
+            const adultX = p.relationship === "child" ? pct(bY + ADULT_AGE) : null;
+            const mils = milestones.filter((m) => m.personId === p.id);
+            return (
+              <Row
+                key={p.id}
+                avatar={<Avatar p={p} size={26} />}
+                label={
+                  <span className="font-sans text-[12.5px] font-semibold text-ink-2">{p.name}</span>
+                }
+              >
+                <Track decades={decades} pct={pct} nowX={pct(nowY)}>
+                  {/* life band, fading to horizon */}
+                  <div
+                    className="absolute h-[9px] rounded-pill"
+                    style={{
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      left: `${pct(bY)}%`,
+                      width: `${Math.max(0, pct(hY) - pct(bY))}%`,
+                      background: `linear-gradient(90deg, ${p.color}D9 0%, ${p.color}B0 55%, ${p.color}00 100%)`,
+                    }}
+                  />
+                  {adultX != null ? (
+                    <div
+                      className="absolute bottom-1 top-1 w-0"
+                      style={{ left: `${adultX}%`, borderLeft: `1.5px dashed ${p.color}` }}
+                    >
+                      <span
+                        className="absolute -top-[2px] left-[3px] font-sans text-[9px] font-bold"
+                        style={{ color: p.color }}
+                      >
+                        18
+                      </span>
+                    </div>
+                  ) : null}
+                  {mils.map((m) => (
+                    <Dot key={m.id} x={pct(yearOf(m.date))} color={p.color} />
+                  ))}
+                </Track>
+              </Row>
+            );
+          })}
 
-      <div className="mt-[14px] flex flex-wrap gap-4">
-        <div className="flex items-center gap-[7px]">
-          <div
-            className="h-[6px] w-4 rounded-pill"
-            style={{ background: "linear-gradient(90deg, var(--ink-2), transparent)" }}
-          />
-          <span className="font-sans text-[11.5px] text-ink-3">A life, fading to its horizon</span>
-        </div>
-        <div className="flex items-center gap-[7px]">
-          <div className="h-3 w-0 border-l-2 border-brand" />
-          <span className="font-sans text-[11.5px] text-ink-3">Today</span>
+          {/* decade axis */}
+          <div className="relative ml-[94px] mt-[2px] h-4">
+            {decades.map((y) => (
+              <span
+                key={y}
+                className="absolute font-sans text-[10px] text-ink-4"
+                style={{ left: `${pct(y)}%`, transform: "translateX(-50%)" }}
+              >
+                {y}
+              </span>
+            ))}
+          </div>
+        </Card>
+
+        <div className="mt-[14px] flex flex-wrap gap-4">
+          <div className="flex items-center gap-[7px]">
+            <div
+              className="h-[6px] w-4 rounded-pill"
+              style={{ background: "linear-gradient(90deg, var(--ink-2), transparent)" }}
+            />
+            <span className="font-sans text-[11.5px] text-ink-3">A life, fading to its horizon</span>
+          </div>
+          <div className="flex items-center gap-[7px]">
+            <div className="h-3 w-0 border-l-2 border-brand" />
+            <span className="font-sans text-[11.5px] text-ink-3">Today</span>
+          </div>
         </div>
       </div>
     </div>
