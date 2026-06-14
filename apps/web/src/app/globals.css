@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --canvas: #f4f0e9;
+  --canvas-deep: #ebe4d8;
+  --card: #ffffff;
+  --card-soft: #fbf8f2;
+  --ink: #2a2620;
+  --ink-2: #6b655b;
+  --ink-3: #a39c90;
+  --ink-4: #cfc8bb;
+  --line: #eae3d7;
+  --line-2: #ded6c7;
+  --brand: #bc6a45;
+  --brand-soft: #f2e0d6;
+  --brand-ink: #9a5132;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--canvas-deep);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* mobile-web feel */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* sheet motion (no extra plugin needed) */
+@keyframes sheet-in {
+  from { transform: translateY(14px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.sheet-content[data-state="open"] {
+  animation: sheet-in 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.sheet-overlay[data-state="open"] {
+  animation: fade-in 0.2s ease;
+}

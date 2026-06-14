@@ -1,0 +1,15 @@
+{
+  "name": "lifelines",
+  "private": true,
+  "version": "0.1.0",
+  "description": "See the time you still have with the people who matter.",
+  "scripts": {
+    "dev": "pnpm --filter @lifelines/web dev",
+    "build": "pnpm --filter @lifelines/core build && pnpm --filter @lifelines/web build",
+    "start": "pnpm --filter @lifelines/web start",
+    "lint": "pnpm --filter @lifelines/web lint",
+    "typecheck": "pnpm -r exec tsc --noEmit"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "engines": { "node": ">=20" }
+}

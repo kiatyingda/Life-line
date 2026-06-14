@@ -1,0 +1,154 @@
+"use client";
+
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { PERSON_COLORS, type Person, type Relationship } from "@lifelines/core";
+import { Sheet } from "@/components/ui/sheet";
+import { Field } from "@/components/ui/field";
+import { TextInput } from "@/components/ui/text-input";
+import { Button } from "@/components/ui/button";
+
+const REL: ReadonlyArray<{ k: Relationship; emoji: string; color: string }> = [
+  { k: "self", emoji: "🧑🏻", color: PERSON_COLORS.self },
+  { k: "partner", emoji: "🧑🏻‍🤝‍🧑🏻", color: PERSON_COLORS.partner },
+  { k: "parent", emoji: "👵🏻", color: PERSON_COLORS.parent },
+  { k: "child", emoji: "🧒🏻", color: PERSON_COLORS.child },
+  { k: "sibling", emoji: "🧑🏻", color: PERSON_COLORS.sibling },
+  { k: "friend", emoji: "🙂", color: PERSON_COLORS.friend },
+];
+
+const schema = z.object({
+  name: z.string().trim().min(1, "Add a name"),
+  relationship: z.enum(["self", "partner", "parent", "child", "sibling", "friend"]),
+  birthDate: z.string().min(1),
+  lifeExpectancy: z.number().min(40).max(110),
+  emoji: z.string().trim().min(1),
+});
+type FormValues = z.infer<typeof schema>;
+
+const blank: FormValues = {
+  name: "",
+  relationship: "parent",
+  birthDate: "1960-01-01",
+  lifeExpectancy: 85,
+  emoji: "👵🏻",
+};
+
+export function PersonSheet({
+  open,
+  onOpenChange,
+  editing,
+  onSave,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  editing: Person | null;
+  onSave: (p: Person | Omit<Person, "id">) => void;
+}) {
+  const { register, handleSubmit, reset, watch, setValue, formState } =
+    useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: blank });
+
+  useEffect(() => {
+    if (!open) return;
+    if (editing) {
+      reset({
+        name: editing.name,
+        relationship: editing.relationship,
+        birthDate: editing.birthDate,
+        lifeExpectancy: editing.lifeExpectancy,
+        emoji: editing.emoji,
+      });
+    } else {
+      reset(blank);
+    }
+  }, [open, editing, reset]);
+
+  const rel = watch("relationship");
+  const le = watch("lifeExpectancy");
+  const emoji = watch("emoji");
+
+  const submit = handleSubmit((v) => {
+    const color = REL.find((r) => r.k === v.relationship)?.color ?? PERSON_COLORS.parent;
+    const base = { ...v, color };
+    onSave(editing ? { ...editing, ...base } : base);
+    onOpenChange(false);
+  });
+
+  return (
+    <Sheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={editing ? "Edit person" : "Someone who matters"}
+    >
+      <Field label="Name" error={formState.errors.name?.message}>
+        <TextInput placeholder="Dad" {...register("name")} />
+      </Field>
+
+      <Field label="Relationship">
+        <div className="flex flex-wrap gap-2">
+          {REL.map((r) => {
+            const on = rel === r.k;
+            return (
+              <button
+                key={r.k}
+                type="button"
+                onClick={() => {
+                  setValue("relationship", r.k);
+                  if (!editing) setValue("emoji", r.emoji);
+                }}
+                style={{
+                  background: on ? `${r.color}20` : "var(--card)",
+                  boxShadow: `inset 0 0 0 1.5px ${on ? `${r.color}70` : "var(--line-2)"}`,
+                }}
+                className={`rounded-pill px-[14px] py-2 font-sans text-[13px] font-semibold capitalize ${on ? "text-ink" : "text-ink-2"}`}
+              >
+                {r.k}
+              </button>
+            );
+          })}
+        </div>
+      </Field>
+
+      <div className="flex gap-3">
+        <div className="flex-1">
+          <Field label="Born">
+            <TextInput type="date" {...register("birthDate")} />
+          </Field>
+        </div>
+        <div className="w-[92px]">
+          <Field label="Emoji">
+            <TextInput
+              className="text-center text-xl"
+              value={emoji}
+              onChange={(e) => setValue("emoji", e.target.value)}
+            />
+          </Field>
+        </div>
+      </div>
+
+      {rel !== "child" ? (
+        <Field label={`Life expectancy estimate · ${le}`}>
+          <input
+            type="range"
+            min={50}
+            max={105}
+            value={le}
+            onChange={(e) => setValue("lifeExpectancy", Number(e.target.value))}
+            className="w-full accent-brand"
+          />
+          <p className="mt-1 font-sans text-[11.5px] text-ink-3">
+            A rough estimate — it only shapes how time is framed, never shown as a countdown.
+          </p>
+        </Field>
+      ) : null}
+
+      <div className="mt-2">
+        <Button type="submit" onClick={submit}>
+          {editing ? "Save changes" : "Add to my people"}
+        </Button>
+      </div>
+    </Sheet>
+  );
+}
