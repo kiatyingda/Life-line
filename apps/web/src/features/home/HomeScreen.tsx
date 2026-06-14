@@ -1,21 +1,19 @@
 "use client";
 
-import { useMemo } from "react";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { useMemo, useState } from "react";
 import {
-  momentsFor,
-  nextBirthday,
-  daysBetween,
-  parseISO,
-  insightsFor,
+  windowDays,
+  windowMonths,
+  windowYears,
   type Person,
 } from "@lifelines/core";
 import { useAppStore, selectSelf } from "@/store/useAppStore";
-import { Card } from "@/components/ui/card";
+import { Avatar } from "@/components/ui/avatar";
+import { Chip } from "@/components/ui/chip";
 import { Label } from "@/components/ui/label";
 import { Numeral } from "@/components/ui/numeral";
-import { Avatar } from "@/components/ui/avatar";
-import { insightIcon } from "@/lib/icons";
+import { Segmented } from "@/components/ui/segmented";
+import { MomentsGrid, type GridUnit } from "./MomentsGrid";
 
 function Greeting() {
   const h = new Date().getHours();
@@ -26,153 +24,152 @@ function Greeting() {
     day: "numeric",
   });
   return (
-    <div className="mb-[18px]">
-      <Label>{date}</Label>
-      <div className="mt-1 font-serif text-[26px] font-medium text-ink">
+    <div>
+      <div className="font-sans text-[12px] font-semibold uppercase tracking-[0.12em] text-ink-2/80">
+        {date}
+      </div>
+      <div className="mt-1 font-serif text-[34px] font-medium leading-[1.05] text-ink">
         Good {part}.
       </div>
     </div>
   );
 }
 
-export function HomeScreen({ onPerson }: { onPerson: (id: string) => void }) {
+function unitSuffix(p: Person, unit: GridUnit, n: number): string {
+  if (p.relationship === "child") {
+    const first = p.name.split(" ")[0];
+    if (unit === "year") return `${n === 1 ? "summer" : "summers"} before ${first} is grown`;
+    if (unit === "month") return `${n === 1 ? "month" : "months"} before grown`;
+    return `days before grown`;
+  }
+  if (unit === "year") return `${n === 1 ? "summer" : "summers"} left together`;
+  if (unit === "month") return `${n === 1 ? "month" : "months"} still ahead`;
+  return `days still ahead`;
+}
+
+function PersonBlock({
+  person,
+  self,
+  unit,
+}: {
+  person: Person;
+  self: Person | undefined;
+  unit: GridUnit;
+}) {
+  const count =
+    unit === "day"
+      ? windowDays(person, self)
+      : unit === "month"
+        ? windowMonths(person, self)
+        : windowYears(person, self);
+
+  return (
+    <div className="rounded-card bg-card p-[18px] shadow-card">
+      <header className="mb-4 flex items-center gap-3">
+        <Avatar p={person} size={44} />
+        <div className="flex-1">
+          <div className="font-sans text-[15.5px] font-semibold text-ink">
+            {person.name}
+          </div>
+          <div className="flex items-baseline gap-[6px]">
+            <Numeral size={22} color={person.color}>
+              {count.toLocaleString()}
+            </Numeral>
+            <span className="font-sans text-[12.5px] text-ink-3">
+              {unitSuffix(person, unit, count)}
+            </span>
+          </div>
+        </div>
+      </header>
+      <MomentsGrid person={person} self={self} unit={unit} />
+    </div>
+  );
+}
+
+export function HomeScreen(_: { onPerson: (id: string) => void }) {
   const people = useAppStore((s) => s.people);
-  const milestones = useAppStore((s) => s.milestones);
   const self = useAppStore(selectSelf);
+  const [unit, setUnit] = useState<GridUnit>("month");
+
   const others = useMemo(
     () => people.filter((p) => p.relationship !== "self"),
     [people],
   );
 
-  const ranked = useMemo(
-    () =>
-      others
-        .map((p) => ({ p, m: momentsFor(p, self)[0]! }))
-        .sort((a, b) => a.m.n - b.m.n),
-    [others, self],
-  );
-  const hero = ranked[0];
-  const surfaced = ranked.slice(0, 3);
-  const insights = useMemo(() => insightsFor(people), [people]);
+  // Track which chips the user has hidden. Default: nobody hidden (all shown).
+  // Stale IDs (someone removed) are tolerated — filter ignores unknown ids.
+  const [hidden, setHidden] = useState<Set<string>>(() => new Set());
+  const toggle = (id: string) =>
+    setHidden((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
 
-  const upcoming = useMemo(() => {
-    const events = [
-      ...people.map((p) => ({
-        when: nextBirthday(p.birthDate),
-        label: `${p.name.split(" ")[0]}'s birthday`,
-        emoji: "🎂",
-      })),
-      ...milestones.map((m) => ({ when: parseISO(m.date), label: m.title, emoji: m.emoji })),
-    ]
-      .map((e) => ({ ...e, days: daysBetween(e.when) }))
-      .filter((e) => e.days >= 0)
-      .sort((a, b) => a.days - b.days);
-    return events.slice(0, 2);
-  }, [people, milestones]);
-
-  if (!hero) {
-    return (
-      <div className="px-5 pb-4 pt-2">
-        <Greeting />
-        <p className="font-sans text-sm text-ink-2">Add someone you love to begin.</p>
-      </div>
-    );
-  }
-
-  const Insight0 = insights[0];
+  const isActive = (id: string) => !hidden.has(id);
+  const shown = others.filter((p) => isActive(p.id));
 
   return (
-    <div className="px-5 pb-4 pt-2">
-      <Greeting />
+    <div>
+      {/* sunset header — Headspace-influenced warm gradient */}
+      <div className="bg-sunset -mt-[14px] px-5 pb-[22px] pt-5">
+        <Greeting />
 
-      {/* HERO — the shared window, framed as opportunity */}
-      <div className="mb-[26px]">
-        <div className="flex flex-wrap items-baseline gap-[10px]">
-          <Numeral size={68} color="var(--brand)">
-            {hero.m.n}
-          </Numeral>
-          <span className="font-serif text-[30px] font-medium text-ink">
-            {hero.m.unit} left
-          </span>
-        </div>
-        <div className="mt-[2px] font-serif text-[30px] font-medium text-ink">
-          with {hero.p.name}.
-        </div>
-        <p className="mt-[10px] font-sans text-sm leading-relaxed text-ink-2">
-          That&apos;s the time you have together while you have it. Make one of them count.
-        </p>
-      </div>
-
-      {/* people row */}
-      <div className="no-scrollbar mb-[22px] flex gap-4 overflow-x-auto pb-[6px]">
-        {people.map((p) => (
-          <button
-            key={p.id}
-            onClick={() => onPerson(p.id)}
-            className="flex flex-col items-center gap-[7px]"
-          >
-            <Avatar p={p} size={54} />
-            <span className="font-sans text-xs font-semibold text-ink-2">{p.name}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* surfaced moments */}
-      <Label className="mb-3">Time, together</Label>
-      <div className="mb-[26px] flex flex-col gap-[10px]">
-        {surfaced.map(({ p, m }) => (
-          <Card
-            key={p.id}
-            onClick={() => onPerson(p.id)}
-            className="flex items-center gap-[14px] p-4"
-          >
-            <Avatar p={p} size={42} />
-            <div className="flex-1">
-              <div className="flex items-baseline gap-[7px]">
-                <Numeral size={30} color={p.color}>
-                  {m.n}
-                </Numeral>
-                <span className="font-sans text-sm font-semibold text-ink">{m.unit}</span>
-              </div>
-              <div className="mt-[1px] font-sans text-[12.5px] text-ink-3">
-                {m.sub} · {p.name}
-              </div>
+        {others.length > 0 ? (
+          <>
+            <div className="mt-5 flex flex-wrap gap-2">
+              {others.map((p) => (
+                <Chip
+                  key={p.id}
+                  active={isActive(p.id)}
+                  color={p.color}
+                  onClick={() => toggle(p.id)}
+                >
+                  <span className="text-[14px] leading-none">{p.emoji}</span>
+                  <span>{p.name}</span>
+                </Chip>
+              ))}
             </div>
-            <ArrowRight size={16} className="text-ink-4" />
-          </Card>
-        ))}
+
+            <div className="mt-4">
+              <Segmented<GridUnit>
+                value={unit}
+                onChange={setUnit}
+                options={[
+                  ["day", "Days"],
+                  ["month", "Months"],
+                  ["year", "Years"],
+                ]}
+              />
+            </div>
+          </>
+        ) : null}
       </div>
 
-      {/* insight */}
-      {Insight0 ? (
-        <>
-          <Label className="mb-3">Worth remembering</Label>
-          <div className="mb-[26px] rounded-card bg-brand-soft p-[18px]">
-            <div className="flex gap-3">
-              <Sparkles size={18} className="mt-[2px] shrink-0 text-brand-ink" />
-              <span className="font-serif text-lg font-medium leading-snug text-brand-ink">
-                {Insight0.text}
-              </span>
-            </div>
+      {/* grid zone */}
+      <div className="px-5 pt-5">
+        {others.length === 0 ? (
+          <div className="rounded-card bg-card p-6 text-center shadow-card">
+            <div className="mb-2 text-[44px] leading-none">🌅</div>
+            <p className="font-serif text-[19px] font-medium leading-snug text-ink">
+              Add someone to see your shared months.
+            </p>
+            <p className="mt-2 font-sans text-[13px] text-ink-3">
+              Tap the + on the People tab.
+            </p>
           </div>
-        </>
-      ) : null}
-
-      {/* coming up */}
-      <Label className="mb-3">Coming up</Label>
-      <div className="flex flex-col gap-2">
-        {upcoming.map((e, i) => (
-          <div
-            key={i}
-            className="flex items-center gap-3 rounded-[14px] bg-card-soft px-[14px] py-3 shadow-[inset_0_0_0_1px_var(--line)]"
-          >
-            <span className="text-xl leading-none">{e.emoji}</span>
-            <span className="flex-1 font-sans text-sm text-ink">{e.label}</span>
-            <span className="font-sans text-[12.5px] font-semibold text-ink-3">
-              {e.days === 0 ? "today" : `in ${e.days}d`}
-            </span>
+        ) : shown.length === 0 ? (
+          <div className="rounded-card bg-card-soft p-5 text-center">
+            <Label>Pick at least one person to show their grid.</Label>
           </div>
-        ))}
+        ) : (
+          <div className="flex flex-col gap-3">
+            {shown.map((p) => (
+              <PersonBlock key={p.id} person={p} self={self} unit={unit} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

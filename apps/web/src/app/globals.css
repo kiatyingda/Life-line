@@ -16,6 +16,20 @@
   --brand: #bc6a45;
   --brand-soft: #f2e0d6;
   --brand-ink: #9a5132;
+  /* sunset — warm gradient surface (Headspace-influenced),
+     used as a hero background on Home. Stays warm, no red. */
+  --sunset-top: #fbe5a8;
+  --sunset-mid: #f3b97a;
+  --sunset-low: #e89460;
+}
+
+.bg-sunset {
+  background: linear-gradient(
+    180deg,
+    var(--sunset-top) 0%,
+    var(--sunset-mid) 58%,
+    var(--sunset-low) 100%
+  );
 }
 
 html {
