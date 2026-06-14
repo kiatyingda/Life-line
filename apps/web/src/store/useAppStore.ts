@@ -55,7 +55,9 @@ export const useAppStore = create<AppState>()(
         }),
     }),
     {
-      name: "lifelines:data:v1",
+      // v2 wipes the old demo seed (Dad/Mum/Alicia/Amelia + sample memories).
+      // Users now onboard into their own self profile on first launch.
+      name: "lifelines:data:v2",
       storage: createJSONStorage(webStorage),
       partialize: (s) => ({
         people: s.people,

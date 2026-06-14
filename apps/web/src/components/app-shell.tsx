@@ -41,10 +41,12 @@ export function AppShell() {
   const onAdd = () =>
     tab === "people" ? setPersonSheet({ open: true, editing: null }) : setMemOpen(true);
 
+  const needsOnboarding = hydrated && !people.some((p) => p.relationship === "self");
+
   return (
     <div className="flex min-h-dvh w-full items-center justify-center bg-canvas-deep">
       <div className="relative flex h-dvh w-full flex-col overflow-hidden bg-canvas sm:h-[860px] sm:max-h-[92vh] sm:w-[420px] sm:rounded-[32px] sm:shadow-[0_30px_90px_rgba(42,38,32,0.22)]">
-        {!hydrated ? (
+        {!hydrated || needsOnboarding ? (
           <Splash />
         ) : (
           <>
@@ -83,6 +85,16 @@ export function AppShell() {
             />
           </>
         )}
+
+        {/* First-run self setup. Driven entirely by store state: closes itself
+            the moment the user submits and a "self" person lands in the store. */}
+        <PersonSheet
+          open={needsOnboarding}
+          onOpenChange={() => {}}
+          editing={null}
+          onSave={addPerson}
+          firstRun
+        />
       </div>
     </div>
   );

@@ -22,7 +22,7 @@ const REL: ReadonlyArray<{ k: Relationship; emoji: string; color: string }> = [
 const schema = z.object({
   name: z.string().trim().min(1, "Add a name"),
   relationship: z.enum(["self", "partner", "parent", "child", "sibling", "friend"]),
-  birthDate: z.string().min(1),
+  birthDate: z.string().min(1, "Add a date"),
   lifeExpectancy: z.number().min(40).max(110),
   emoji: z.string().trim().min(1),
 });
@@ -36,19 +36,35 @@ const blank: FormValues = {
   emoji: "👵🏻",
 };
 
+const selfBlank: FormValues = {
+  name: "Me",
+  relationship: "self",
+  birthDate: "",
+  lifeExpectancy: 85,
+  emoji: "🧑🏻",
+};
+
 export function PersonSheet({
   open,
   onOpenChange,
   editing,
   onSave,
+  firstRun = false,
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
   editing: Person | null;
   onSave: (p: Person | Omit<Person, "id">) => void;
+  /** First-launch self setup: locks relationship to "self", blocks dismissal. */
+  firstRun?: boolean;
 }) {
   const { register, handleSubmit, reset, watch, setValue, formState } =
-    useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: blank });
+    useForm<FormValues>({
+      resolver: zodResolver(schema),
+      defaultValues: firstRun ? selfBlank : blank,
+    });
+
+  const lockedSelf = firstRun || editing?.relationship === "self";
 
   useEffect(() => {
     if (!open) return;
@@ -61,9 +77,9 @@ export function PersonSheet({
         emoji: editing.emoji,
       });
     } else {
-      reset(blank);
+      reset(firstRun ? selfBlank : blank);
     }
-  }, [open, editing, reset]);
+  }, [open, editing, reset, firstRun]);
 
   const rel = watch("relationship");
   const le = watch("lifeExpectancy");
@@ -76,44 +92,62 @@ export function PersonSheet({
     onOpenChange(false);
   });
 
+  const title = firstRun
+    ? "Hi — start with you"
+    : editing
+      ? "Edit person"
+      : "Someone who matters";
+
+  const buttonLabel = firstRun
+    ? "Save my profile"
+    : editing
+      ? "Save changes"
+      : "Add to my people";
+
+  // "self" is hidden from the picker outside firstRun — there can only be one.
+  const pickable = lockedSelf ? [] : REL.filter((r) => r.k !== "self");
+
   return (
     <Sheet
       open={open}
       onOpenChange={onOpenChange}
-      title={editing ? "Edit person" : "Someone who matters"}
+      title={title}
+      dismissible={!firstRun}
     >
       <Field label="Name" error={formState.errors.name?.message}>
-        <TextInput placeholder="Dad" {...register("name")} />
+        <TextInput placeholder={firstRun ? "Your name" : "Dad"} {...register("name")} />
       </Field>
 
-      <Field label="Relationship">
-        <div className="flex flex-wrap gap-2">
-          {REL.map((r) => {
-            const on = rel === r.k;
-            return (
-              <button
-                key={r.k}
-                type="button"
-                onClick={() => {
-                  setValue("relationship", r.k);
-                  if (!editing) setValue("emoji", r.emoji);
-                }}
-                style={{
-                  background: on ? `${r.color}20` : "var(--card)",
-                  boxShadow: `inset 0 0 0 1.5px ${on ? `${r.color}70` : "var(--line-2)"}`,
-                }}
-                className={`rounded-pill px-[14px] py-2 font-sans text-[13px] font-semibold capitalize ${on ? "text-ink" : "text-ink-2"}`}
-              >
-                {r.k}
-              </button>
-            );
-          })}
-        </div>
-      </Field>
+      {lockedSelf ? null : (
+        <Field label="Relationship">
+          <div className="flex flex-wrap gap-2">
+            {pickable.map((r) => {
+              const on = rel === r.k;
+              return (
+                <button
+                  key={r.k}
+                  type="button"
+                  onClick={() => {
+                    setValue("relationship", r.k);
+                    if (!editing) setValue("emoji", r.emoji);
+                  }}
+                  style={{
+                    background: on ? `${r.color}20` : "var(--card)",
+                    boxShadow: `inset 0 0 0 1.5px ${on ? `${r.color}70` : "var(--line-2)"}`,
+                  }}
+                  className={`rounded-pill px-[14px] py-2 font-sans text-[13px] font-semibold capitalize ${on ? "text-ink" : "text-ink-2"}`}
+                >
+                  {r.k}
+                </button>
+              );
+            })}
+          </div>
+        </Field>
+      )}
 
       <div className="flex gap-3">
         <div className="flex-1">
-          <Field label="Born">
+          <Field label="Born" error={formState.errors.birthDate?.message}>
             <TextInput type="date" {...register("birthDate")} />
           </Field>
         </div>
@@ -146,7 +180,7 @@ export function PersonSheet({
 
       <div className="mt-2">
         <Button type="submit" onClick={submit}>
-          {editing ? "Save changes" : "Add to my people"}
+          {buttonLabel}
         </Button>
       </div>
     </Sheet>
