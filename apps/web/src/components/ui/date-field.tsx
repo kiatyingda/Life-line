@@ -80,8 +80,8 @@ export function DateField({
     onChange(`${ny}-${PAD(nm)}-${PAD(nd)}`);
   };
 
-  const inputCls =
-    "w-full rounded-field bg-card px-3 py-3 font-sans text-[15px] text-ink shadow-[inset_0_0_0_1px_var(--line-2)] outline-none transition placeholder:text-ink-4 focus:shadow-[inset_0_0_0_1.5px_var(--brand)]";
+  const baseCls =
+    "rounded-field bg-card px-3 py-3 font-sans text-[15px] text-ink shadow-[inset_0_0_0_1px_var(--line-2)] outline-none transition placeholder:text-ink-4 focus:shadow-[inset_0_0_0_1.5px_var(--brand)]";
 
   return (
     <div className="flex gap-2">
@@ -97,7 +97,7 @@ export function DateField({
           setD(e.target.value);
           emit(e.target.value, m, y);
         }}
-        className={`${inputCls} w-[64px] text-center`}
+        className={`${baseCls} w-[60px] shrink-0 text-center`}
       />
       <select
         aria-label="Month"
@@ -106,7 +106,7 @@ export function DateField({
           setM(e.target.value);
           emit(d, e.target.value, y);
         }}
-        className={`${inputCls} flex-1 appearance-none`}
+        className={`${baseCls} min-w-0 flex-1 appearance-none`}
       >
         <option value="" disabled>
           Month
@@ -129,7 +129,7 @@ export function DateField({
           setY(e.target.value);
           emit(d, m, e.target.value);
         }}
-        className={`${inputCls} w-[88px] text-center`}
+        className={`${baseCls} w-[80px] shrink-0 text-center`}
       />
     </div>
   );
