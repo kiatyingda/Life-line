@@ -13,9 +13,14 @@ export function windowEnd(
   self: Person | undefined,
   now: Date = today(),
 ): Date {
-  if (p.relationship === "self") return now;
-
   const b = parseISO(p.birthDate);
+
+  // Self looks at their own remaining lifeline — framed as time still yours,
+  // never as a countdown to anything.
+  if (p.relationship === "self") {
+    return new Date(b.getFullYear() + p.lifeExpectancy, b.getMonth(), b.getDate());
+  }
+
   if (p.relationship === "child") {
     return new Date(b.getFullYear() + ADULT_AGE, b.getMonth(), b.getDate());
   }

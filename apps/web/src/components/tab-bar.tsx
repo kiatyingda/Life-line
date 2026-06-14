@@ -1,14 +1,13 @@
 "use client";
 
-import { Home, Users, Clock, BookOpen, Plus, type LucideIcon } from "lucide-react";
+import { Home, Users, BookOpen, Plus, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/cn";
 
-export type Tab = "home" | "people" | "timeline" | "journal";
+export type Tab = "home" | "people" | "journal";
 
 const TABS: ReadonlyArray<readonly [Tab, LucideIcon]> = [
   ["home", Home],
   ["people", Users],
-  ["timeline", Clock],
   ["journal", BookOpen],
 ];
 

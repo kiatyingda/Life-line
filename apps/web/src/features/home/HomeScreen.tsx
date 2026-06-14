@@ -13,7 +13,6 @@ import { Chip } from "@/components/ui/chip";
 import { Label } from "@/components/ui/label";
 import { Numeral } from "@/components/ui/numeral";
 import { Segmented } from "@/components/ui/segmented";
-import { Sunrise } from "@/components/ui/sunrise";
 import { MomentsGrid, type GridUnit } from "./MomentsGrid";
 
 function Greeting() {
@@ -42,6 +41,11 @@ function unitSuffix(p: Person, unit: GridUnit, n: number): string {
     if (unit === "year") return `${n === 1 ? "summer" : "summers"} before ${first} is grown`;
     if (unit === "month") return `${n === 1 ? "month" : "months"} before grown`;
     return `days before grown`;
+  }
+  if (p.relationship === "self") {
+    if (unit === "year") return `${n === 1 ? "summer" : "summers"} still yours`;
+    if (unit === "month") return `${n === 1 ? "month" : "months"} still yours`;
+    return `days still yours`;
   }
   if (unit === "year") return `${n === 1 ? "summer" : "summers"} left together`;
   if (unit === "month") return `${n === 1 ? "month" : "months"} still ahead`;
@@ -92,8 +96,10 @@ export function HomeScreen(_: { onPerson: (id: string) => void }) {
   const self = useAppStore(selectSelf);
   const [unit, setUnit] = useState<GridUnit>("month");
 
-  const others = useMemo(
-    () => people.filter((p) => p.relationship !== "self"),
+  // Everyone — self included. Self goes first so the user sees their own
+  // lifeline at the top.
+  const all = useMemo(
+    () => [...people].sort((a, b) => (a.relationship === "self" ? -1 : b.relationship === "self" ? 1 : 0)),
     [people],
   );
 
@@ -109,7 +115,8 @@ export function HomeScreen(_: { onPerson: (id: string) => void }) {
     });
 
   const isActive = (id: string) => !hidden.has(id);
-  const shown = others.filter((p) => isActive(p.id));
+  const shown = all.filter((p) => isActive(p.id));
+  const hasOthers = all.some((p) => p.relationship !== "self");
 
   return (
     <div>
@@ -117,61 +124,55 @@ export function HomeScreen(_: { onPerson: (id: string) => void }) {
       <div className="bg-sunset -mt-[14px] px-5 pb-[22px] pt-5">
         <Greeting />
 
-        {others.length > 0 ? (
-          <>
-            <div className="mt-5 flex flex-wrap gap-2">
-              {others.map((p) => (
-                <Chip
-                  key={p.id}
-                  active={isActive(p.id)}
-                  color={p.color}
-                  onClick={() => toggle(p.id)}
-                >
-                  <Avatar p={p} size={22} />
-                  <span>{p.name}</span>
-                </Chip>
-              ))}
-            </div>
+        <div className="mt-5 flex flex-wrap gap-2">
+          {all.map((p) => (
+            <Chip
+              key={p.id}
+              active={isActive(p.id)}
+              color={p.color}
+              onClick={() => toggle(p.id)}
+            >
+              <Avatar p={p} size={22} />
+              <span>{p.name}</span>
+            </Chip>
+          ))}
+        </div>
 
-            <div className="mt-4">
-              <Segmented<GridUnit>
-                value={unit}
-                onChange={setUnit}
-                options={[
-                  ["day", "Days"],
-                  ["month", "Months"],
-                  ["year", "Years"],
-                ]}
-              />
-            </div>
-          </>
-        ) : null}
+        <div className="mt-4">
+          <Segmented<GridUnit>
+            value={unit}
+            onChange={setUnit}
+            options={[
+              ["day", "Days"],
+              ["month", "Months"],
+              ["year", "Years"],
+            ]}
+          />
+        </div>
       </div>
 
       {/* grid zone */}
       <div className="px-5 pt-5">
-        {others.length === 0 ? (
-          <div className="rounded-card bg-card p-6 text-center shadow-card">
-            <div className="mb-3 flex justify-center">
-              <Sunrise size={80} tone="soft" />
-            </div>
-            <p className="font-serif text-[19px] font-medium leading-snug text-ink">
-              Add someone to see your shared months.
-            </p>
-            <p className="mt-2 font-sans text-[13px] text-ink-3">
-              Tap <span className="font-semibold text-ink-2">+</span> below to begin.
-            </p>
-          </div>
-        ) : shown.length === 0 ? (
+        {shown.length === 0 ? (
           <div className="rounded-card bg-card-soft p-5 text-center">
             <Label>Pick at least one person to show their grid.</Label>
           </div>
         ) : (
-          <div className="flex flex-col gap-3">
-            {shown.map((p) => (
-              <PersonBlock key={p.id} person={p} self={self} unit={unit} />
-            ))}
-          </div>
+          <>
+            <div className="flex flex-col gap-3">
+              {shown.map((p) => (
+                <PersonBlock key={p.id} person={p} self={self} unit={unit} />
+              ))}
+            </div>
+            {!hasOthers ? (
+              <div className="mt-4 rounded-card bg-card/60 p-4 text-center">
+                <p className="font-sans text-[13px] text-ink-3">
+                  Add the people who matter — tap{" "}
+                  <span className="font-semibold text-ink-2">+</span> below.
+                </p>
+              </div>
+            ) : null}
+          </>
         )}
       </div>
     </div>

@@ -3,17 +3,19 @@
 Context for Claude Code working in this repo. Read before making changes.
 
 ## What this is
-A warm, hopeful app for visualizing the *remaining shared time* with people you
-love — summers left with a parent, years before a child is grown — to drive
+A warm, hopeful app for visualizing the *time you have* — your own remaining
+months, summers left with a parent, years before a child is grown — to drive
 intention, not dread. Web-first, architected so the domain layer ports to a
 future Expo (React Native) app untouched.
 
-## The one rule that defines the product
-NEVER frame time as a death countdown. No "% of life elapsed" bars, no
-end-of-life markers. Time is the **shared window**: bounded by the shorter of two
-lives; for a child, by childhood (age 18), not death. Say "12 summers left with
-Dad", never "Dad is 86% through life". If a feature implies a death clock, it is
-wrong — push back.
+## The framing rule
+Time is framed as warmth, not dread. The Home grid visualizes remaining time
+for **everyone in the household — self included** — as a dot per month / day /
+year. Render counts as plain keepsake numerals ("136 months still ahead",
+"58 summers still yours"), never as "% of life elapsed" bars, progress sliders,
+or explicit "days until you die" copy. Self's grid is bounded by their own
+life expectancy; relatives by the shorter of their or your horizon; children
+by their 18th birthday. Per-person windows, no single shared timeline.
 
 ## Stack & layout
 pnpm workspace monorepo. Node 20+, pnpm 9 (`corepack enable`).
@@ -61,8 +63,16 @@ pnpm workspace monorepo. Node 20+, pnpm 9 (`corepack enable`).
   TanStack Query for server state.
 
 ## Decisions already made — do not reintroduce
-Removed life-progress bars / end-of-life markers (death-clock). Moments curated
-to summers / trips / birthdays (no weekends/days — too granular, reads morbid).
-Dropped TanStack Query (no server yet) and Day.js (core stays dep-free).
-`lifeExpectancy` is a labeled rough estimate that only shapes framing — never a
-visible countdown.
+- Removed life-progress bars and percentage-elapsed markers. Numerals are
+  keepsakes, never progress bars.
+- Removed the Timeline tab (the strip-based "Lives, overlapping" view). The
+  Home dot grid is the only time visualization.
+- Moments curated to summers / trips / birthdays (no weekends/days — too
+  granular, reads morbid).
+- Dropped TanStack Query (no server yet) and Day.js (core stays dep-free).
+- `lifeExpectancy` is a labeled rough estimate that shapes the grid window —
+  shown as a keepsake count, never as an explicit countdown to death.
+- Avatars are initials in the person's color (Fraunces serif). No emoji
+  illustrations anywhere — use SVG (`Sunrise`) or lucide icons.
+- Sunset gradient header is the shared visual signature across all tabs
+  (`SunsetHeader` component).

@@ -7,7 +7,6 @@ import { TabBar, type Tab } from "./tab-bar";
 import { HomeScreen } from "@/features/home/HomeScreen";
 import { PeopleScreen } from "@/features/people/PeopleScreen";
 import { PersonDetail } from "@/features/people/PersonDetail";
-import { TimelineScreen } from "@/features/timeline/TimelineScreen";
 import { JournalScreen } from "@/features/journal/JournalScreen";
 import { MemorySheet } from "@/features/journal/MemorySheet";
 import { PersonSheet } from "@/features/people/PersonSheet";
@@ -73,8 +72,6 @@ export function AppShell() {
                 <HomeScreen onPerson={setSelectedId} />
               ) : tab === "people" ? (
                 <PeopleScreen onPerson={setSelectedId} />
-              ) : tab === "timeline" ? (
-                <TimelineScreen />
               ) : (
                 <JournalScreen onAdd={() => setMemOpen(true)} />
               )}
