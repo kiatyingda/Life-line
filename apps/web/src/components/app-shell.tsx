@@ -5,17 +5,17 @@ import type { Person } from "@lifelines/core";
 import { useAppStore, useHasHydrated } from "@/store/useAppStore";
 import { TabBar, type Tab } from "./tab-bar";
 import { HomeScreen } from "@/features/home/HomeScreen";
-import { PeopleScreen } from "@/features/people/PeopleScreen";
 import { PersonDetail } from "@/features/people/PersonDetail";
 import { JournalScreen } from "@/features/journal/JournalScreen";
 import { MemorySheet } from "@/features/journal/MemorySheet";
 import { PersonSheet } from "@/features/people/PersonSheet";
 import { OnboardingScreen } from "@/features/onboarding/OnboardingScreen";
+import { AddMenu } from "@/features/add/AddMenu";
 
 function Splash() {
   return (
     <div className="flex flex-1 items-center justify-center">
-      <span className="font-serif text-[22px] font-medium tracking-tight text-ink-3">
+      <span className="font-sans text-[20px] font-extrabold tracking-tight text-ink-3">
         LifeLines
       </span>
     </div>
@@ -32,23 +32,13 @@ export function AppShell() {
   const [tab, setTab] = useState<Tab>("home");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [memOpen, setMemOpen] = useState(false);
+  const [addMenuOpen, setAddMenuOpen] = useState(false);
   const [personSheet, setPersonSheet] = useState<{ open: boolean; editing: Person | null }>({
     open: false,
     editing: null,
   });
 
   const selected = selectedId ? (people.find((p) => p.id === selectedId) ?? null) : null;
-  // What `+` adds depends on context: on People, always a person; on Home
-  // with no one else added yet, a person (otherwise no moments to make);
-  // everywhere else, a moment.
-  const hasOthers = people.some((p) => p.relationship !== "self");
-  const onAdd = () => {
-    if (tab === "people" || (tab === "home" && !hasOthers)) {
-      setPersonSheet({ open: true, editing: null });
-    } else {
-      setMemOpen(true);
-    }
-  };
 
   const needsOnboarding = hydrated && !people.some((p) => p.relationship === "self");
 
@@ -70,15 +60,22 @@ export function AppShell() {
                 />
               ) : tab === "home" ? (
                 <HomeScreen onPerson={setSelectedId} />
-              ) : tab === "people" ? (
-                <PeopleScreen onPerson={setSelectedId} />
               ) : (
                 <JournalScreen onAdd={() => setMemOpen(true)} />
               )}
-              <div className="h-[90px]" />
+              <div className="h-[96px]" />
             </div>
 
-            {!selected ? <TabBar tab={tab} onTab={setTab} onAdd={onAdd} /> : null}
+            {!selected ? (
+              <TabBar tab={tab} onTab={setTab} onAdd={() => setAddMenuOpen(true)} />
+            ) : null}
+
+            <AddMenu
+              open={addMenuOpen}
+              onOpenChange={setAddMenuOpen}
+              onAddPerson={() => setPersonSheet({ open: true, editing: null })}
+              onAddMoment={() => setMemOpen(true)}
+            />
 
             <MemorySheet
               open={memOpen}

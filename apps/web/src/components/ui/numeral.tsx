@@ -1,6 +1,9 @@
 import { cn } from "@/lib/cn";
 
-/** Signature element: counts rendered as keepsakes, not metrics. */
+/**
+ * Signature element: counts rendered as keepsakes — heavy sans-serif with
+ * tabular numerals so values stay aligned when they change.
+ */
 export function Numeral({
   children,
   size = 46,
@@ -14,8 +17,13 @@ export function Numeral({
 }) {
   return (
     <span
-      className={cn("font-serif font-medium", className)}
-      style={{ fontSize: size, lineHeight: 0.95, color, fontFeatureSettings: "'ss01'" }}
+      className={cn("font-sans font-extrabold tabular-nums", className)}
+      style={{
+        fontSize: size,
+        lineHeight: 0.92,
+        letterSpacing: "-0.02em",
+        color,
+      }}
     >
       {children}
     </span>

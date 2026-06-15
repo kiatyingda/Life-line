@@ -1,17 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Inter } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const serif = Fraunces({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-serif",
-  display: "swap",
-});
-
+// Sans-serif end to end. Loaded with the heavier weights up to 900 so
+// headlines have proper Headspace-grade weight.
 const sans = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800", "900"],
   variable: "--font-sans",
   display: "swap",
 });
@@ -32,7 +27,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${sans.variable} ${serif.variable}`}>
+    <html lang="en" className={sans.variable}>
       <body className="font-sans antialiased">{children}</body>
     </html>
   );

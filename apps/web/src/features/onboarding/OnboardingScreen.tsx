@@ -24,9 +24,8 @@ const defaults: FormValues = {
 };
 
 /**
- * First-launch welcome. Full-screen — not a sheet — because this is the
- * front door, not an interruption. Sunset gradient sets the tone the rest
- * of the app inherits. Illustration over emoji.
+ * First-launch welcome. Full-screen, sunset gradient, sans-bold headline,
+ * single-card form, big pinned CTA. The front door, not an interruption.
  */
 export function OnboardingScreen({
   onSave,
@@ -55,22 +54,24 @@ export function OnboardingScreen({
   return (
     <form
       onSubmit={submit}
-      className="bg-sunset no-scrollbar flex flex-1 flex-col overflow-y-auto px-5 pb-7 pt-10"
+      className="bg-sunset no-scrollbar flex flex-1 flex-col overflow-y-auto px-6 pb-8 pt-12"
     >
       {/* hero */}
-      <div className="rise-in mb-7 flex flex-col items-center text-center">
-        <Sunrise size={108} />
-        <h1 className="mt-5 font-serif text-[34px] font-medium leading-[1.05] text-ink">
+      <div className="rise-in mb-9 flex flex-col items-center text-center">
+        <Sunrise size={120} />
+        <h1
+          className="mt-6 font-sans text-[40px] font-extrabold leading-[1.02] text-ink"
+          style={{ letterSpacing: "-0.03em" }}
+        >
           Welcome.
         </h1>
-        <p className="mx-auto mt-2 max-w-[280px] font-sans text-[14px] leading-snug text-ink-2">
-          A little about you to begin — so the time you have with everyone else
-          has meaning.
+        <p className="mx-auto mt-3 max-w-[300px] font-sans text-[14.5px] font-medium leading-snug text-ink-2">
+          A little about you to begin — so the time you have with everyone else has meaning.
         </p>
       </div>
 
       {/* form */}
-      <div className="rounded-card bg-card/95 p-4 shadow-card backdrop-blur-sm">
+      <div className="rounded-card bg-card/95 p-5 shadow-card backdrop-blur-sm">
         <Field label="Your name" error={formState.errors.name?.message}>
           <TextInput placeholder="Your name" {...register("name")} autoFocus />
         </Field>
@@ -93,13 +94,13 @@ export function OnboardingScreen({
             onChange={(e) => setValue("lifeExpectancy", Number(e.target.value))}
             className="w-full accent-brand"
           />
-          <p className="mt-1 font-sans text-[11.5px] text-ink-3">
-            A rough estimate — it only shapes how time is framed, never shown as a countdown.
+          <p className="mt-1 font-sans text-[11.5px] font-medium text-ink-3">
+            A rough estimate — it shapes how time is framed, never shown as a countdown.
           </p>
         </Field>
       </div>
 
-      <div className="mt-auto pt-6">
+      <div className="mt-auto pt-8">
         <Button type="submit" className="press">
           Begin
         </Button>

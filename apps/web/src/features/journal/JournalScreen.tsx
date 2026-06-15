@@ -5,7 +5,6 @@ import { Plus } from "lucide-react";
 import { parseISO, type Person } from "@lifelines/core";
 import { useAppStore } from "@/store/useAppStore";
 import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { Avatar } from "@/components/ui/avatar";
 import { SunsetHeader } from "@/components/ui/sunset-header";
 import { Sunrise } from "@/components/ui/sunrise";
@@ -35,43 +34,48 @@ export function JournalScreen({ onAdd }: { onAdd: () => void }) {
   return (
     <div>
       <SunsetHeader
-        overline="Journal"
-        title="Moments"
+        overline="Moments"
+        title="The small ones"
         subtitle={`${memories.length} kept so far`}
       >
         <button
           onClick={onAdd}
-          className="press mt-4 inline-flex items-center gap-2 rounded-pill bg-brand px-4 py-[9px] font-sans text-[13px] font-semibold text-[#FFF7F2] shadow-card"
-          aria-label="Add a moment"
+          className="press mt-5 inline-flex items-center gap-2 rounded-pill bg-brand px-5 py-[10px] font-sans text-[13.5px] font-bold text-[#FFF7F2] shadow-card"
+          aria-label="Keep a moment"
         >
-          <Plus size={16} />
+          <Plus size={16} strokeWidth={2.6} />
           Keep a moment
         </button>
       </SunsetHeader>
 
-      <div className="px-5 pt-5">
+      <div className="px-5 pt-6">
         {memories.length === 0 ? (
-          <div className="rounded-card bg-card p-6 text-center shadow-card">
-            <div className="mb-3 flex justify-center">
-              <Sunrise size={80} tone="soft" />
+          <div className="rounded-card bg-card p-8 text-center shadow-card">
+            <div className="mb-4 flex justify-center">
+              <Sunrise size={88} tone="soft" />
             </div>
-            <p className="font-serif text-[19px] font-medium leading-snug text-ink">
+            <p
+              className="font-sans text-[20px] font-extrabold leading-snug text-ink"
+              style={{ letterSpacing: "-0.02em" }}
+            >
               The small ones matter most.
             </p>
-            <p className="mt-2 font-sans text-[13px] text-ink-3">
+            <p className="mt-2 font-sans text-[13.5px] font-medium text-ink-3">
               Keep your first moment above.
             </p>
           </div>
         ) : null}
         {Object.entries(byMonth).map(([month, items]) => (
-          <div key={month} className="mb-[22px]">
-            <Label className="mb-[10px]">{month}</Label>
-            <div className="flex flex-col gap-[10px]">
+          <div key={month} className="mb-7">
+            <div className="mb-3 font-sans text-[11.5px] font-semibold uppercase tracking-[0.14em] text-ink-3">
+              {month}
+            </div>
+            <div className="flex flex-col gap-3">
               {items.map((m) => (
-                <Card key={m.id} className="p-4">
-                  <div className="flex items-baseline justify-between gap-[10px]">
-                    <span className="font-serif text-lg font-medium text-ink">{m.title}</span>
-                    <span className="whitespace-nowrap font-sans text-xs text-ink-3">
+                <Card key={m.id} className="p-5">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="font-sans text-[16px] font-bold text-ink">{m.title}</span>
+                    <span className="whitespace-nowrap font-sans text-[12px] font-medium text-ink-3">
                       {parseISO(m.date).toLocaleDateString(undefined, {
                         month: "short",
                         day: "numeric",
@@ -79,15 +83,15 @@ export function JournalScreen({ onAdd }: { onAdd: () => void }) {
                     </span>
                   </div>
                   {m.note ? (
-                    <div className="mt-1 font-sans text-[13.5px] leading-snug text-ink-2">
+                    <div className="mt-2 font-sans text-[13.5px] leading-snug text-ink-2">
                       {m.note}
                     </div>
                   ) : null}
-                  <div className="mt-3 flex">
+                  <div className="mt-4 flex">
                     {m.personIds.map((id, i) =>
                       pmap[id] ? (
                         <div key={id} style={{ marginLeft: i === 0 ? 0 : -8 }}>
-                          <Avatar p={pmap[id]} size={26} />
+                          <Avatar p={pmap[id]} size={28} />
                         </div>
                       ) : null,
                     )}

@@ -17,7 +17,7 @@ export function Card({
       onClick={onClick}
       style={style}
       className={cn(
-        "rounded-card bg-card p-[18px] shadow-card",
+        "rounded-card bg-card p-5 shadow-card",
         interactive && "cursor-pointer transition-transform active:scale-[0.99]",
         className,
       )}

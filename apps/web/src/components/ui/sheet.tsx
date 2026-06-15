@@ -24,16 +24,22 @@ export function Sheet({
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Overlay className="sheet-overlay absolute inset-0 z-40 bg-[rgba(30,26,20,0.32)] backdrop-blur-[2px]" />
       <Dialog.Content
-        className="sheet-content no-scrollbar absolute inset-x-0 bottom-0 z-50 max-h-[86%] overflow-y-auto rounded-t-sheet bg-canvas px-5 pb-7 pt-[10px] shadow-lift focus:outline-none"
+        className="sheet-content no-scrollbar absolute inset-x-0 bottom-0 z-50 max-h-[88%] overflow-y-auto rounded-t-sheet bg-canvas px-6 pb-8 pt-3 shadow-lift focus:outline-none"
         aria-describedby={undefined}
       >
-        <div className="mx-auto mb-[14px] mt-2 h-1 w-[38px] rounded-pill bg-line-2" />
-        <div className="mb-4 flex items-center justify-between">
-          <Dialog.Title className="font-serif text-[22px] font-medium text-ink">
+        <div className="mx-auto mb-[18px] mt-2 h-1 w-[40px] rounded-pill bg-line-2" />
+        <div className="mb-5 flex items-center justify-between">
+          <Dialog.Title
+            className="font-sans text-[22px] font-extrabold text-ink"
+            style={{ letterSpacing: "-0.02em" }}
+          >
             {title}
           </Dialog.Title>
-          <Dialog.Close className="rounded-pill bg-card p-2 shadow-card">
-            <X size={16} className="text-ink-2" />
+          <Dialog.Close
+            className="press grid h-9 w-9 place-items-center rounded-pill bg-card shadow-card"
+            aria-label="Close"
+          >
+            <X size={16} className="text-ink-2" strokeWidth={2.4} />
           </Dialog.Close>
         </div>
         {children}

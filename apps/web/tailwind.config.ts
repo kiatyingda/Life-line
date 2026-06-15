@@ -20,8 +20,10 @@ export default {
         "brand-ink": "var(--brand-ink)",
       },
       fontFamily: {
+        // Sans-only. `serif` still resolves to Inter so any lingering
+        // `font-serif` class doesn't fall back to Georgia.
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
-        serif: ["var(--font-serif)", "Georgia", "serif"],
+        serif: ["var(--font-sans)", "system-ui", "sans-serif"],
       },
       borderRadius: { card: "20px", sheet: "28px", field: "12px", pill: "999px" },
       boxShadow: {

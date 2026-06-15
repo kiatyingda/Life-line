@@ -1,13 +1,11 @@
 "use client";
 
-import { ChevronLeft, Pencil } from "lucide-react";
+import { ChevronLeft, Pencil, Sun } from "lucide-react";
 import { momentsFor, ageOn, parseISO, type Person } from "@lifelines/core";
 import { useAppStore, selectSelf } from "@/store/useAppStore";
-import { Label } from "@/components/ui/label";
 import { Numeral } from "@/components/ui/numeral";
 import { Avatar } from "@/components/ui/avatar";
 import { momentIcon, milestoneIconFor } from "@/lib/icons";
-import { Sun } from "lucide-react";
 
 export function PersonDetail({
   person,
@@ -36,48 +34,63 @@ export function PersonDetail({
         : "Time you have together";
 
   return (
-    <div className="pb-4">
+    <div className="pb-6">
       {/* header band in person color */}
       <div
-        className="px-5 pb-6 pt-2"
+        className="-mt-[14px] px-6 pb-8 pt-6"
         style={{
-          background: `linear-gradient(160deg, ${person.color}26, ${person.color}0A)`,
+          background: `linear-gradient(160deg, ${person.color}28, ${person.color}0A)`,
         }}
       >
-        <div className="mb-[18px] flex items-center justify-between">
-          <button onClick={onBack} className="rounded-pill bg-card p-[9px] shadow-card">
-            <ChevronLeft size={18} className="text-ink" />
+        <div className="mb-5 flex items-center justify-between">
+          <button
+            onClick={onBack}
+            className="press grid h-10 w-10 place-items-center rounded-pill bg-card shadow-card"
+            aria-label="Back"
+          >
+            <ChevronLeft size={20} className="text-ink" strokeWidth={2.4} />
           </button>
-          <button onClick={onEdit} className="rounded-pill bg-card p-[9px] shadow-card">
-            <Pencil size={15} className="text-ink-2" />
+          <button
+            onClick={onEdit}
+            className="press grid h-10 w-10 place-items-center rounded-pill bg-card shadow-card"
+            aria-label="Edit"
+          >
+            <Pencil size={16} className="text-ink-2" strokeWidth={2.4} />
           </button>
         </div>
-        <Avatar p={person} size={68} />
-        <div className="mt-3 font-serif text-[32px] font-medium text-ink">{person.name}</div>
-        <div className="font-sans text-[13.5px] capitalize text-ink-2">
+        <Avatar p={person} size={72} />
+        <div
+          className="mt-4 font-sans text-[34px] font-extrabold leading-[1.02] text-ink"
+          style={{ letterSpacing: "-0.025em" }}
+        >
+          {person.name}
+        </div>
+        <div className="mt-1 font-sans text-[13.5px] font-medium capitalize text-ink-2">
           {person.relationship} · {ageOn(person.birthDate)} years old
         </div>
       </div>
 
-      <div className="px-5 pt-5">
-        <Label className="mb-3">{heading}</Label>
+      <div className="px-5 pt-6">
+        <SectionLabel>{heading}</SectionLabel>
         <div
-          className={`mb-[26px] grid gap-[10px] ${moments.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}
+          className={`mb-7 grid gap-3 ${moments.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}
         >
           {moments.map((m) => {
             const Icon = momentIcon[m.key] ?? Sun;
             return (
-              <div key={m.key} className="rounded-[18px] bg-card p-4 shadow-card">
-                <Icon size={16} style={{ color: person.color }} />
-                <div className="mt-[10px]">
-                  <Numeral size={38} color="var(--ink)">
+              <div key={m.key} className="rounded-card bg-card p-5 shadow-card">
+                <Icon size={16} style={{ color: person.color }} strokeWidth={2.4} />
+                <div className="mt-3">
+                  <Numeral size={40} color="var(--ink)">
                     {m.n}
                   </Numeral>
                 </div>
-                <div className="mt-[2px] font-sans text-[13.5px] font-semibold text-ink">
+                <div className="mt-1 font-sans text-[14px] font-bold text-ink">
                   {m.unit}
                 </div>
-                <div className="mt-[1px] font-sans text-xs text-ink-3">{m.sub}</div>
+                <div className="mt-[2px] font-sans text-[12.5px] font-medium text-ink-3">
+                  {m.sub}
+                </div>
               </div>
             );
           })}
@@ -85,23 +98,25 @@ export function PersonDetail({
 
         {stones.length > 0 ? (
           <>
-            <Label className="mb-3">Milestones ahead</Label>
-            <div className="mb-[26px] flex flex-col gap-2">
+            <SectionLabel>Milestones ahead</SectionLabel>
+            <div className="mb-7 flex flex-col gap-2">
               {stones.map((m) => {
                 const Icon = milestoneIconFor(m.category);
                 return (
                   <div
                     key={m.id}
-                    className="flex items-center gap-3 rounded-[14px] bg-card-soft px-[14px] py-3 shadow-[inset_0_0_0_1px_var(--line)]"
+                    className="flex items-center gap-3 rounded-[16px] bg-card-soft px-4 py-3 shadow-[inset_0_0_0_1px_var(--line)]"
                   >
                     <span
-                      className="grid h-7 w-7 place-items-center rounded-pill"
+                      className="grid h-8 w-8 place-items-center rounded-pill"
                       style={{ background: `${person.color}1A` }}
                     >
-                      <Icon size={14} style={{ color: person.color }} />
+                      <Icon size={15} style={{ color: person.color }} strokeWidth={2.4} />
                     </span>
-                    <span className="flex-1 font-sans text-sm text-ink">{m.title}</span>
-                    <span className="font-sans text-[12.5px] text-ink-3">
+                    <span className="flex-1 font-sans text-[14px] font-semibold text-ink">
+                      {m.title}
+                    </span>
+                    <span className="font-sans text-[12.5px] font-medium text-ink-3">
                       {parseISO(m.date).getFullYear()}
                     </span>
                   </div>
@@ -111,20 +126,22 @@ export function PersonDetail({
           </>
         ) : null}
 
-        <Label className="mb-3">
+        <SectionLabel>
           {mems.length} {mems.length === 1 ? "moment" : "moments"} together
-        </Label>
+        </SectionLabel>
         {mems.length === 0 ? (
-          <div className="py-3 font-sans text-[13.5px] text-ink-3">
+          <div className="py-2 font-sans text-[13.5px] font-medium text-ink-3">
             None yet. The small ones matter most.
           </div>
         ) : (
           <div className="flex flex-col gap-2">
             {mems.map((m) => (
-              <div key={m.id} className="rounded-[14px] bg-card px-[14px] py-3 shadow-card">
-                <div className="flex justify-between gap-[10px]">
-                  <span className="font-sans text-sm font-semibold text-ink">{m.title}</span>
-                  <span className="whitespace-nowrap font-sans text-xs text-ink-3">
+              <div key={m.id} className="rounded-[16px] bg-card px-4 py-3 shadow-card">
+                <div className="flex justify-between gap-3">
+                  <span className="font-sans text-[14.5px] font-bold text-ink">
+                    {m.title}
+                  </span>
+                  <span className="whitespace-nowrap font-sans text-[12px] font-medium text-ink-3">
                     {parseISO(m.date).toLocaleDateString(undefined, {
                       month: "short",
                       day: "numeric",
@@ -132,13 +149,21 @@ export function PersonDetail({
                   </span>
                 </div>
                 {m.note ? (
-                  <div className="mt-[3px] font-sans text-[13px] text-ink-2">{m.note}</div>
+                  <div className="mt-1 font-sans text-[13px] text-ink-2">{m.note}</div>
                 ) : null}
               </div>
             ))}
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mb-3 font-sans text-[11.5px] font-semibold uppercase tracking-[0.14em] text-ink-3">
+      {children}
     </div>
   );
 }

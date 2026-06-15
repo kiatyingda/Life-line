@@ -10,7 +10,6 @@ import {
 import { useAppStore, selectSelf } from "@/store/useAppStore";
 import { Avatar } from "@/components/ui/avatar";
 import { Chip } from "@/components/ui/chip";
-import { Label } from "@/components/ui/label";
 import { Numeral } from "@/components/ui/numeral";
 import { Segmented } from "@/components/ui/segmented";
 import { MomentsGrid, type GridUnit } from "./MomentsGrid";
@@ -25,12 +24,15 @@ function Greeting() {
   });
   return (
     <div>
-      <div className="font-sans text-[12px] font-semibold uppercase tracking-[0.12em] text-ink-2/80">
+      <div className="font-sans text-[11.5px] font-semibold uppercase tracking-[0.14em] text-ink-2/80">
         {date}
       </div>
-      <div className="mt-1 font-serif text-[34px] font-medium leading-[1.05] text-ink">
+      <h1
+        className="mt-2 font-sans text-[38px] font-extrabold leading-[1.02] text-ink"
+        style={{ letterSpacing: "-0.025em" }}
+      >
         Good {part}.
-      </div>
+      </h1>
     </div>
   );
 }
@@ -56,10 +58,12 @@ function PersonBlock({
   person,
   self,
   unit,
+  onTap,
 }: {
   person: Person;
   self: Person | undefined;
   unit: GridUnit;
+  onTap: () => void;
 }) {
   const count =
     unit === "day"
@@ -69,29 +73,30 @@ function PersonBlock({
         : windowYears(person, self);
 
   return (
-    <div className="rounded-card bg-card p-[18px] shadow-card">
-      <header className="mb-4 flex items-center gap-3">
-        <Avatar p={person} size={44} />
+    <div className="rounded-card bg-card p-6 shadow-card">
+      <button
+        onClick={onTap}
+        className="press mb-5 flex w-full items-center gap-3 text-left"
+      >
+        <Avatar p={person} size={48} />
         <div className="flex-1">
-          <div className="font-sans text-[15.5px] font-semibold text-ink">
-            {person.name}
-          </div>
-          <div className="flex items-baseline gap-[6px]">
-            <Numeral size={22} color={person.color}>
+          <div className="font-sans text-[17px] font-bold text-ink">{person.name}</div>
+          <div className="mt-1 flex items-baseline gap-2">
+            <Numeral size={26} color={person.color}>
               {count.toLocaleString()}
             </Numeral>
-            <span className="font-sans text-[12.5px] text-ink-3">
+            <span className="font-sans text-[12.5px] font-medium text-ink-3">
               {unitSuffix(person, unit, count)}
             </span>
           </div>
         </div>
-      </header>
+      </button>
       <MomentsGrid person={person} self={self} unit={unit} />
     </div>
   );
 }
 
-export function HomeScreen(_: { onPerson: (id: string) => void }) {
+export function HomeScreen({ onPerson }: { onPerson: (id: string) => void }) {
   const people = useAppStore((s) => s.people);
   const self = useAppStore(selectSelf);
   const [unit, setUnit] = useState<GridUnit>("month");
@@ -104,7 +109,6 @@ export function HomeScreen(_: { onPerson: (id: string) => void }) {
   );
 
   // Track which chips the user has hidden. Default: nobody hidden (all shown).
-  // Stale IDs (someone removed) are tolerated — filter ignores unknown ids.
   const [hidden, setHidden] = useState<Set<string>>(() => new Set());
   const toggle = (id: string) =>
     setHidden((prev) => {
@@ -120,11 +124,11 @@ export function HomeScreen(_: { onPerson: (id: string) => void }) {
 
   return (
     <div>
-      {/* sunset header — Headspace-influenced warm gradient */}
-      <div className="bg-sunset -mt-[14px] px-5 pb-[22px] pt-5">
+      {/* sunset header */}
+      <div className="bg-sunset -mt-[14px] px-6 pb-8 pt-8">
         <Greeting />
 
-        <div className="mt-5 flex flex-wrap gap-2">
+        <div className="mt-7 flex flex-wrap gap-2">
           {all.map((p) => (
             <Chip
               key={p.id}
@@ -138,7 +142,7 @@ export function HomeScreen(_: { onPerson: (id: string) => void }) {
           ))}
         </div>
 
-        <div className="mt-4">
+        <div className="mt-5">
           <Segmented<GridUnit>
             value={unit}
             onChange={setUnit}
@@ -152,23 +156,33 @@ export function HomeScreen(_: { onPerson: (id: string) => void }) {
       </div>
 
       {/* grid zone */}
-      <div className="px-5 pt-5">
+      <div className="px-5 pt-6">
         {shown.length === 0 ? (
-          <div className="rounded-card bg-card-soft p-5 text-center">
-            <Label>Pick at least one person to show their grid.</Label>
+          <div className="rounded-card bg-card-soft p-6 text-center">
+            <p className="font-sans text-[13.5px] font-medium text-ink-3">
+              Pick at least one person above to show their grid.
+            </p>
           </div>
         ) : (
           <>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-4">
               {shown.map((p) => (
-                <PersonBlock key={p.id} person={p} self={self} unit={unit} />
+                <PersonBlock
+                  key={p.id}
+                  person={p}
+                  self={self}
+                  unit={unit}
+                  onTap={() => onPerson(p.id)}
+                />
               ))}
             </div>
             {!hasOthers ? (
-              <div className="mt-4 rounded-card bg-card/60 p-4 text-center">
-                <p className="font-sans text-[13px] text-ink-3">
-                  Add the people who matter — tap{" "}
-                  <span className="font-semibold text-ink-2">+</span> below.
+              <div className="mt-5 rounded-card bg-card/70 p-5 text-center">
+                <p className="font-sans text-[13.5px] font-medium text-ink-2">
+                  Add the people who matter.
+                </p>
+                <p className="mt-1 font-sans text-[12.5px] text-ink-3">
+                  Tap <span className="font-bold text-ink-2">+</span> below.
                 </p>
               </div>
             ) : null}

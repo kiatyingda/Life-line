@@ -1,14 +1,13 @@
 "use client";
 
-import { Home, Users, BookOpen, Plus, type LucideIcon } from "lucide-react";
+import { Home, BookOpen, Plus, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/cn";
 
-export type Tab = "home" | "people" | "journal";
+export type Tab = "home" | "moments";
 
-const TABS: ReadonlyArray<readonly [Tab, LucideIcon]> = [
-  ["home", Home],
-  ["people", Users],
-  ["journal", BookOpen],
+const TABS: ReadonlyArray<readonly [Tab, LucideIcon, string]> = [
+  ["home", Home, "Home"],
+  ["moments", BookOpen, "Moments"],
 ];
 
 function TabBtn({
@@ -23,16 +22,16 @@ function TabBtn({
   onClick: () => void;
 }) {
   return (
-    <button onClick={onClick} className="flex w-[60px] flex-col items-center gap-1">
+    <button onClick={onClick} className="press flex w-[72px] flex-col items-center gap-1">
       <Icon
-        size={21}
-        strokeWidth={active ? 2.4 : 2}
+        size={22}
+        strokeWidth={active ? 2.5 : 2}
         className={active ? "text-brand" : "text-ink-3"}
       />
       <span
         className={cn(
-          "font-sans text-[10px] capitalize",
-          active ? "font-bold text-brand" : "font-medium text-ink-3",
+          "font-sans text-[11px]",
+          active ? "font-bold text-brand" : "font-semibold text-ink-3",
         )}
       >
         {label}
@@ -50,21 +49,28 @@ export function TabBar({
   onTab: (t: Tab) => void;
   onAdd: () => void;
 }) {
+  const [home, moments] = TABS;
   return (
-    <div className="absolute inset-x-0 bottom-0 flex h-[76px] items-center justify-around border-t border-line bg-[rgba(244,240,233,0.9)] pb-[max(8px,env(safe-area-inset-bottom))] backdrop-blur-[14px]">
-      {TABS.slice(0, 2).map(([k, Icon]) => (
-        <TabBtn key={k} active={tab === k} Icon={Icon} label={k} onClick={() => onTab(k)} />
-      ))}
+    <div className="absolute inset-x-0 bottom-0 flex h-[80px] items-center justify-around border-t border-line bg-[rgba(244,240,233,0.92)] pb-[max(8px,env(safe-area-inset-bottom))] backdrop-blur-[14px]">
+      <TabBtn
+        active={tab === home[0]}
+        Icon={home[1]}
+        label={home[2]}
+        onClick={() => onTab(home[0])}
+      />
       <button
         onClick={onAdd}
         aria-label="Add"
-        className="press -mt-[14px] grid h-[52px] w-[52px] place-items-center rounded-pill bg-brand shadow-[0_8px_20px_rgba(188,106,69,0.4)]"
+        className="press -mt-[18px] grid h-[56px] w-[56px] place-items-center rounded-pill bg-brand shadow-[0_10px_24px_rgba(188,106,69,0.42)]"
       >
-        <Plus size={24} className="text-[#FFF7F2]" />
+        <Plus size={26} className="text-[#FFF7F2]" strokeWidth={2.6} />
       </button>
-      {TABS.slice(2).map(([k, Icon]) => (
-        <TabBtn key={k} active={tab === k} Icon={Icon} label={k} onClick={() => onTab(k)} />
-      ))}
+      <TabBtn
+        active={tab === moments[0]}
+        Icon={moments[1]}
+        label={moments[2]}
+        onClick={() => onTab(moments[0])}
+      />
     </div>
   );
 }
