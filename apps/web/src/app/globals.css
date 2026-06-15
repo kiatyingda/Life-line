@@ -48,6 +48,21 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* hide native number-input spinners — DateField does its own validation */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* range slider — softer thumb shadow */
+input[type="range"] {
+  height: 26px;
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

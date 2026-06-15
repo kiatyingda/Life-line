@@ -1,5 +1,6 @@
 import {
   Sun,
+  Sunrise,
   Plane,
   Gift,
   Cake,
@@ -24,6 +25,7 @@ export const momentIcon: Record<string, LucideIcon> = {
   birthday: Cake,
   seasons: Gift,
   lived: Clock,
+  ahead: Sunrise,
 };
 
 export const insightIcon: Record<InsightKind, LucideIcon> = {

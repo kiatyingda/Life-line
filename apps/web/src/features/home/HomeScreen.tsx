@@ -24,6 +24,9 @@ function Greeting({ name }: { name: string }) {
     day: "numeric",
   });
   const first = name.split(" ")[0] ?? name;
+  // "Me" is the default — don't address the user as "Me" until they
+  // give a real name (which they can do via the Self avatar → edit).
+  const personable = first && first.toLowerCase() !== "me" && first.toLowerCase() !== "you";
   return (
     <div>
       <div className="font-sans text-[11.5px] font-semibold uppercase tracking-[0.14em] text-ink-2/80">
@@ -33,8 +36,14 @@ function Greeting({ name }: { name: string }) {
         className="mt-2 font-sans text-[36px] font-extrabold leading-[1.05] text-ink"
         style={{ letterSpacing: "-0.025em" }}
       >
-        Good {part},<br />
-        {first}.
+        {personable ? (
+          <>
+            Good {part},<br />
+            {first}.
+          </>
+        ) : (
+          <>Good {part}.</>
+        )}
       </h1>
     </div>
   );

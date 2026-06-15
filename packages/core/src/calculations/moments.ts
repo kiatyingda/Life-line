@@ -33,8 +33,16 @@ export function momentsFor(
   now: Date = today(),
 ): Moment[] {
   if (p.relationship === "self") {
+    const lived = ageOn(p.birthDate, now);
+    const ahead = yearsLeft(p, now);
     return [
-      { key: "lived", n: ageOn(p.birthDate, now), unit: "years lived", sub: "right in the middle of it" },
+      { key: "lived", n: lived, unit: "years lived", sub: "right in the middle of it" },
+      {
+        key: "ahead",
+        n: ahead,
+        unit: ahead === 1 ? "summer still yours" : "summers still yours",
+        sub: "make them count",
+      },
     ];
   }
 
