@@ -115,9 +115,14 @@ input[type="range"] {
   transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
               filter 0.18s ease;
 }
+@media (hover: hover) {
+  .press:hover {
+    filter: brightness(1.03);
+  }
+}
 .press:active {
   transform: scale(0.97);
-  filter: brightness(0.95);
+  filter: brightness(0.94);
 }
 
 /* gentle rise-in for hero content; reduce-motion friendly */
