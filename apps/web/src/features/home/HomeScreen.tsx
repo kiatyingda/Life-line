@@ -137,7 +137,7 @@ export function HomeScreen({ onPerson }: { onPerson: (id: string) => void }) {
   const hasOthers = all.some((p) => p.relationship !== "self");
 
   return (
-    <div>
+    <div className="screen-in">
       {/* sunset header */}
       <div className="bg-sunset -mt-[14px] px-6 pb-8 pt-8">
         <Greeting name={self?.name ?? "you"} />

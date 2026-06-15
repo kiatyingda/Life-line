@@ -32,7 +32,7 @@ export function JournalScreen({ onAdd }: { onAdd: () => void }) {
   }, [memories]);
 
   return (
-    <div>
+    <div className="screen-in">
       <SunsetHeader
         overline="Moments"
         title="Your moments"
