@@ -34,7 +34,7 @@ export function PersonDetail({
         : "Time you have together";
 
   return (
-    <div className="pb-6">
+    <div className="screen-in pb-6">
       {/* header band in person color */}
       <div
         className="-mt-[14px] px-6 pb-8 pt-6"

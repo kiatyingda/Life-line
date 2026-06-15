@@ -1,6 +1,6 @@
 "use client";
 
-import { UserPlus, BookmarkPlus, type LucideIcon } from "lucide-react";
+import { UserPlus, BookmarkPlus, ChevronRight, type LucideIcon } from "lucide-react";
 import { Sheet } from "@/components/ui/sheet";
 
 /**
@@ -66,8 +66,11 @@ function Row({
       </span>
       <span className="flex-1">
         <span className="block font-sans text-[16px] font-bold text-ink">{title}</span>
-        <span className="block font-sans text-[13px] text-ink-3">{subtitle}</span>
+        <span className="block font-sans text-[13px] font-medium text-ink-3">
+          {subtitle}
+        </span>
       </span>
+      <ChevronRight size={18} className="text-ink-4" strokeWidth={2.4} />
     </button>
   );
 }

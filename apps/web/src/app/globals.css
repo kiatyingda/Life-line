@@ -32,6 +32,21 @@
   );
 }
 
+/* fade the sunset into the canvas instead of a hard cutoff */
+.bg-sunset::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -12px;
+  height: 24px;
+  background: linear-gradient(180deg, var(--sunset-low) 0%, var(--canvas) 100%);
+  pointer-events: none;
+}
+.bg-sunset {
+  position: relative;
+}
+
 html {
   -webkit-text-size-adjust: 100%;
 }
@@ -112,9 +127,13 @@ input[type="range"] {
 .dot-in {
   animation: dot-in 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+.screen-in {
+  animation: rise-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
 @media (prefers-reduced-motion: reduce) {
   .rise-in,
   .dot-in,
+  .screen-in,
   .sheet-content[data-state="open"],
   .sheet-overlay[data-state="open"] {
     animation: none !important;
