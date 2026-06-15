@@ -1,6 +1,7 @@
 "use client";
 
-import { ChevronLeft, Pencil, Sun } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ChevronLeft, Pencil, Sun, Trash2 } from "lucide-react";
 import { momentsFor, ageOn, parseISO, type Person } from "@lifelines/core";
 import { useAppStore, selectSelf } from "@/store/useAppStore";
 import { Numeral } from "@/components/ui/numeral";
@@ -19,6 +20,25 @@ export function PersonDetail({
   const self = useAppStore(selectSelf);
   const memories = useAppStore((s) => s.memories);
   const milestones = useAppStore((s) => s.milestones);
+  const removePerson = useAppStore((s) => s.removePerson);
+
+  // Two-tap remove: first tap arms the action, second tap confirms.
+  // Auto-disarms after 3s so a stray tap doesn't leave it primed.
+  const [armed, setArmed] = useState(false);
+  useEffect(() => {
+    if (!armed) return;
+    const t = setTimeout(() => setArmed(false), 3000);
+    return () => clearTimeout(t);
+  }, [armed]);
+
+  const onRemove = () => {
+    if (!armed) {
+      setArmed(true);
+      return;
+    }
+    removePerson(person.id);
+    onBack();
+  };
 
   const moments = momentsFor(person, self);
   const mems = memories.filter((m) => m.personIds.includes(person.id));
@@ -157,6 +177,24 @@ export function PersonDetail({
             ))}
           </div>
         )}
+
+        {person.relationship !== "self" ? (
+          <div className="mt-10 flex justify-center">
+            <button
+              type="button"
+              onClick={onRemove}
+              className="press inline-flex items-center gap-2 rounded-pill px-5 py-[10px] font-sans text-[13px] font-bold transition"
+              style={
+                armed
+                  ? { background: "var(--brand)", color: "#FFF7F2" }
+                  : { color: "var(--ink-3)" }
+              }
+            >
+              <Trash2 size={14} strokeWidth={2.4} />
+              {armed ? `Tap again to remove ${person.name.split(" ")[0]}` : `Remove ${person.name.split(" ")[0]}`}
+            </button>
+          </div>
+        ) : null}
       </div>
     </div>
   );
