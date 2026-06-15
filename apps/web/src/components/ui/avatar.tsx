@@ -28,8 +28,12 @@ export function Avatar({ p, size = 40 }: { p: Person; size?: number }) {
       }}
     >
       <span
-        className="font-serif font-medium"
-        style={{ color: p.color, fontSize: size * 0.42 }}
+        className="font-sans font-bold"
+        style={{
+          color: p.color,
+          fontSize: size * 0.42,
+          letterSpacing: "-0.02em",
+        }}
       >
         {initials(p.name)}
       </span>

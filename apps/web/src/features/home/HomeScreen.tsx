@@ -7,6 +7,7 @@ import {
   windowYears,
   type Person,
 } from "@lifelines/core";
+import { ChevronRight } from "lucide-react";
 import { useAppStore, selectSelf } from "@/store/useAppStore";
 import { Avatar } from "@/components/ui/avatar";
 import { Chip } from "@/components/ui/chip";
@@ -14,7 +15,7 @@ import { Numeral } from "@/components/ui/numeral";
 import { Segmented } from "@/components/ui/segmented";
 import { MomentsGrid, type GridUnit } from "./MomentsGrid";
 
-function Greeting() {
+function Greeting({ name }: { name: string }) {
   const h = new Date().getHours();
   const part = h < 12 ? "morning" : h < 18 ? "afternoon" : "evening";
   const date = new Date().toLocaleDateString(undefined, {
@@ -22,16 +23,18 @@ function Greeting() {
     month: "long",
     day: "numeric",
   });
+  const first = name.split(" ")[0] ?? name;
   return (
     <div>
       <div className="font-sans text-[11.5px] font-semibold uppercase tracking-[0.14em] text-ink-2/80">
         {date}
       </div>
       <h1
-        className="mt-2 font-sans text-[38px] font-extrabold leading-[1.02] text-ink"
+        className="mt-2 font-sans text-[36px] font-extrabold leading-[1.05] text-ink"
         style={{ letterSpacing: "-0.025em" }}
       >
-        Good {part}.
+        Good {part},<br />
+        {first}.
       </h1>
     </div>
   );
@@ -77,6 +80,7 @@ function PersonBlock({
       <button
         onClick={onTap}
         className="press mb-5 flex w-full items-center gap-3 text-left"
+        aria-label={`Open ${person.name}`}
       >
         <Avatar p={person} size={48} />
         <div className="flex-1">
@@ -90,6 +94,7 @@ function PersonBlock({
             </span>
           </div>
         </div>
+        <ChevronRight size={18} className="text-ink-4" strokeWidth={2.4} />
       </button>
       <MomentsGrid person={person} self={self} unit={unit} />
     </div>
@@ -126,7 +131,7 @@ export function HomeScreen({ onPerson }: { onPerson: (id: string) => void }) {
     <div>
       {/* sunset header */}
       <div className="bg-sunset -mt-[14px] px-6 pb-8 pt-8">
-        <Greeting />
+        <Greeting name={self?.name ?? "you"} />
 
         <div className="mt-7 flex flex-wrap gap-2">
           {all.map((p) => (

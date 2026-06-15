@@ -20,8 +20,8 @@ export function Chip({
         boxShadow: `inset 0 0 0 1.5px ${active ? `${color}70` : "var(--line-2)"}`,
       }}
       className={cn(
-        "flex items-center gap-[7px] rounded-pill px-3 py-[7px] font-sans text-[13px] font-semibold capitalize transition",
-        active ? "text-ink" : "text-ink-2",
+        "press flex items-center gap-2 rounded-pill py-1 pl-1 pr-[14px] font-sans text-[13px] font-bold capitalize transition",
+        active ? "text-ink" : "text-ink-2/85",
       )}
     >
       {children}

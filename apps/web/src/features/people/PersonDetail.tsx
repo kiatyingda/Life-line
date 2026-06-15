@@ -65,8 +65,10 @@ export function PersonDetail({
         >
           {person.name}
         </div>
-        <div className="mt-1 font-sans text-[13.5px] font-medium capitalize text-ink-2">
-          {person.relationship} · {ageOn(person.birthDate)} years old
+        <div className="mt-1 font-sans text-[13.5px] font-medium text-ink-2">
+          <span className="capitalize">{person.relationship}</span>
+          {" · "}
+          {ageOn(person.birthDate)} years old
         </div>
       </div>
 

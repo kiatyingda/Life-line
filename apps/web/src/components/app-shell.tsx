@@ -11,11 +11,15 @@ import { MemorySheet } from "@/features/journal/MemorySheet";
 import { PersonSheet } from "@/features/people/PersonSheet";
 import { OnboardingScreen } from "@/features/onboarding/OnboardingScreen";
 import { AddMenu } from "@/features/add/AddMenu";
+import { Sunrise } from "@/components/ui/sunrise";
 
 function Splash() {
   return (
-    <div className="flex flex-1 items-center justify-center">
-      <span className="font-sans text-[20px] font-extrabold tracking-tight text-ink-3">
+    <div className="flex flex-1 flex-col items-center justify-center gap-3 bg-canvas">
+      <Sunrise size={64} tone="soft" />
+      <span
+        className="font-sans text-[18px] font-extrabold tracking-[-0.02em] text-ink-2"
+      >
         LifeLines
       </span>
     </div>
