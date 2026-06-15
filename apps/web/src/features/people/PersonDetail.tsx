@@ -39,7 +39,7 @@ export function PersonDetail({
       <div
         className="-mt-[14px] px-6 pb-8 pt-6"
         style={{
-          background: `linear-gradient(160deg, ${person.color}28, ${person.color}0A)`,
+          background: `linear-gradient(165deg, ${person.color}3A 0%, ${person.color}18 55%, ${person.color}08 100%)`,
         }}
       >
         <div className="mb-5 flex items-center justify-between">
