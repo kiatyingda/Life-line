@@ -64,22 +64,29 @@ export function MomentsGrid({
         justifyContent: "start",
       }}
     >
-      {Array.from({ length: count }, (_, i) => (
-        <span
-          key={i}
-          aria-hidden
-          className="dot-in"
-          style={{
-            width: dot,
-            height: dot,
-            borderRadius: "50%",
-            background: person.color,
-            // gentle fade into the future — the far edge sits quieter
-            opacity: 0.92 - (i / Math.max(count, 1)) * 0.34,
-            animationDelay: `${staggerMs(i)}ms`,
-          }}
-        />
-      ))}
+      {Array.from({ length: count }, (_, i) => {
+        const isNow = i === 0;
+        return (
+          <span
+            key={i}
+            aria-hidden
+            className="dot-in"
+            style={{
+              width: dot,
+              height: dot,
+              borderRadius: "50%",
+              background: person.color,
+              // gentle fade into the future — the far edge sits quieter
+              opacity: isNow ? 1 : 0.92 - (i / Math.max(count, 1)) * 0.34,
+              animationDelay: `${staggerMs(i)}ms`,
+              // tiny halo on "now" so it reads as the anchor point
+              boxShadow: isNow
+                ? `0 0 0 2px var(--card), 0 0 0 3px ${person.color}66`
+                : undefined,
+            }}
+          />
+        );
+      })}
     </div>
   );
 }

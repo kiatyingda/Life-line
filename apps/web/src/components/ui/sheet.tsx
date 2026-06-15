@@ -27,7 +27,7 @@ export function Sheet({
         className="sheet-content no-scrollbar absolute inset-x-0 bottom-0 z-50 max-h-[88%] overflow-y-auto rounded-t-sheet bg-canvas px-6 pb-8 pt-3 shadow-lift focus:outline-none"
         aria-describedby={undefined}
       >
-        <div className="mx-auto mb-[18px] mt-2 h-1 w-[40px] rounded-pill bg-line-2" />
+        <div className="mx-auto mb-[18px] mt-2 h-[5px] w-[44px] rounded-pill bg-ink-4/50" />
         <div className="mb-5 flex items-center justify-between">
           <Dialog.Title
             className="font-sans text-[22px] font-extrabold text-ink"
