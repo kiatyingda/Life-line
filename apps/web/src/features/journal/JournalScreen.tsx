@@ -35,8 +35,12 @@ export function JournalScreen({ onAdd }: { onAdd: () => void }) {
     <div>
       <SunsetHeader
         overline="Moments"
-        title="The small ones"
-        subtitle={`${memories.length} kept so far`}
+        title="Your moments"
+        subtitle={
+          memories.length === 0
+            ? "The small ones matter most."
+            : `${memories.length} ${memories.length === 1 ? "kept" : "kept so far"}`
+        }
       >
         <button
           onClick={onAdd}
@@ -58,10 +62,10 @@ export function JournalScreen({ onAdd }: { onAdd: () => void }) {
               className="font-sans text-[20px] font-extrabold leading-snug text-ink"
               style={{ letterSpacing: "-0.02em" }}
             >
-              The small ones matter most.
+              Nothing kept yet.
             </p>
             <p className="mt-2 font-sans text-[13.5px] font-medium text-ink-3">
-              Keep your first moment above.
+              Tap <span className="font-bold text-ink-2">Keep a moment</span> above to start.
             </p>
           </div>
         ) : null}
