@@ -12,10 +12,45 @@ function initials(name: string): string {
 }
 
 /**
- * Initials avatar in the person's color. Replaces the earlier emoji avatar —
- * no emoticons in the product, just identity through warm color + serif letter.
+ * Initials avatar in the person's color. Two visual styles:
+ *  - `solid` (auto for size < 30): person color fills the disc, white letter.
+ *    Higher contrast — legible at chip / list scale.
+ *  - tinted (default for larger): pale color background, colored letter
+ *    plus a thin inner ring. Softer, sits gracefully in hero contexts.
  */
-export function Avatar({ p, size = 40 }: { p: Person; size?: number }) {
+export function Avatar({
+  p,
+  size = 40,
+  solid,
+}: {
+  p: Person;
+  size?: number;
+  solid?: boolean;
+}) {
+  const useSolid = solid ?? size < 30;
+
+  if (useSolid) {
+    return (
+      <div
+        className="grid shrink-0 select-none place-items-center leading-none"
+        style={{
+          width: size,
+          height: size,
+          borderRadius: 999,
+          background: p.color,
+          boxShadow: `0 1px 2px rgba(42,38,32,0.18)`,
+        }}
+      >
+        <span
+          className="font-sans font-extrabold text-[#FFF7F2]"
+          style={{ fontSize: size * 0.46, letterSpacing: "-0.02em" }}
+        >
+          {initials(p.name)}
+        </span>
+      </div>
+    );
+  }
+
   return (
     <div
       className="grid shrink-0 select-none place-items-center leading-none"
