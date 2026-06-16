@@ -4,6 +4,14 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import {
+  User,
+  Heart,
+  Baby,
+  Users,
+  Smile,
+  type LucideIcon,
+} from "lucide-react";
 import { PERSON_COLORS, type Person, type Relationship } from "@lifelines/core";
 import { Sheet } from "@/components/ui/sheet";
 import { Field } from "@/components/ui/field";
@@ -11,13 +19,13 @@ import { TextInput } from "@/components/ui/text-input";
 import { Button } from "@/components/ui/button";
 import { DateField } from "@/components/ui/date-field";
 
-const REL: ReadonlyArray<{ k: Relationship; color: string }> = [
-  { k: "self", color: PERSON_COLORS.self },
-  { k: "partner", color: PERSON_COLORS.partner },
-  { k: "parent", color: PERSON_COLORS.parent },
-  { k: "child", color: PERSON_COLORS.child },
-  { k: "sibling", color: PERSON_COLORS.sibling },
-  { k: "friend", color: PERSON_COLORS.friend },
+const REL: ReadonlyArray<{ k: Relationship; color: string; Icon: LucideIcon }> = [
+  { k: "self", color: PERSON_COLORS.self, Icon: User },
+  { k: "partner", color: PERSON_COLORS.partner, Icon: Heart },
+  { k: "parent", color: PERSON_COLORS.parent, Icon: User },
+  { k: "child", color: PERSON_COLORS.child, Icon: Baby },
+  { k: "sibling", color: PERSON_COLORS.sibling, Icon: Users },
+  { k: "friend", color: PERSON_COLORS.friend, Icon: Smile },
 ];
 
 const schema = z.object({
@@ -96,17 +104,22 @@ export function PersonSheet({
           <div className="flex flex-wrap gap-2">
             {pickable.map((r) => {
               const on = rel === r.k;
+              const Icon = r.Icon;
               return (
                 <button
                   key={r.k}
                   type="button"
                   onClick={() => setValue("relationship", r.k)}
                   style={{
-                    background: on ? `${r.color}20` : "var(--card)",
-                    boxShadow: `inset 0 0 0 1.5px ${on ? `${r.color}70` : "var(--line-2)"}`,
+                    background: on ? `${r.color}28` : "var(--card)",
+                    boxShadow: on
+                      ? `inset 0 0 0 1.5px ${r.color}90`
+                      : `inset 0 0 0 1.5px var(--line-2)`,
+                    color: on ? r.color : undefined,
                   }}
-                  className={`rounded-pill px-[14px] py-2 font-sans text-[13px] font-semibold capitalize ${on ? "text-ink" : "text-ink-2"}`}
+                  className={`press flex items-center gap-[6px] rounded-pill px-[14px] py-2 font-sans text-[13px] font-bold capitalize ${on ? "" : "text-ink-3"}`}
                 >
+                  <Icon size={14} strokeWidth={2.4} />
                   {r.k}
                 </button>
               );
