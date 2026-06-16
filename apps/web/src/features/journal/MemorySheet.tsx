@@ -80,14 +80,16 @@ export function MemorySheet({
                 type="button"
                 onClick={() => toggle(p.id)}
                 style={{
-                  background: on ? `${p.color}20` : "var(--card)",
-                  boxShadow: `inset 0 0 0 1.5px ${on ? `${p.color}70` : "var(--line-2)"}`,
+                  background: on ? `${p.color}28` : "var(--card)",
+                  boxShadow: on
+                    ? `inset 0 0 0 1.5px ${p.color}90`
+                    : `inset 0 0 0 1.5px var(--line-2)`,
                 }}
-                className="flex items-center gap-2 rounded-pill py-1 pl-1 pr-3"
+                className="press flex items-center gap-2 rounded-pill py-1 pl-1 pr-3"
               >
                 <Avatar p={p} size={24} />
                 <span
-                  className={`font-sans text-[13px] font-semibold ${on ? "text-ink" : "text-ink-2"}`}
+                  className={`font-sans text-[13px] font-bold ${on ? "text-ink" : "text-ink-3"}`}
                 >
                   {p.name}
                 </span>
