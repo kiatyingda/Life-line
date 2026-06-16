@@ -22,7 +22,16 @@ function TabBtn({
   onClick: () => void;
 }) {
   return (
-    <button onClick={onClick} className="press flex w-[72px] flex-col items-center gap-1">
+    <button
+      onClick={onClick}
+      className="press relative flex w-[72px] flex-col items-center gap-1"
+    >
+      {active ? (
+        <span
+          aria-hidden
+          className="absolute -top-[10px] h-[3px] w-7 rounded-pill bg-brand"
+        />
+      ) : null}
       <Icon
         size={22}
         strokeWidth={active ? 2.5 : 2}
