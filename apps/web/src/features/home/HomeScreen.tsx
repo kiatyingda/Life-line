@@ -95,7 +95,7 @@ function PersonBlock({
         <div className="flex-1">
           <div className="font-sans text-[17px] font-bold text-ink">{person.name}</div>
           <div className="mt-1 flex items-baseline gap-2">
-            <Numeral size={26} color={person.color}>
+            <Numeral size={26} color={person.color} animate>
               {count.toLocaleString()}
             </Numeral>
             <span className="font-sans text-[12.5px] font-medium text-ink-3">
